@@ -1,0 +1,65 @@
+{# Admin navigation menu - Phase 5 implementation (TR-FE-002, TR-STRUCT-021) #}
+<nav class="navbar">
+    <div class="navbar__brand">
+        <a href="{{ url_for('dashboard_index') }}" class="navbar__brand-link">
+            <span class="navbar__brand-icon" aria-hidden="true">📊</span>
+            <span class="navbar__brand-text">Student Result System</span>
+        </a>
+    </div>
+
+    <ul class="navbar__menu">
+        <li class="navbar__item">
+            <a href="{{ url_for('dashboard_index') }}" class="navbar__link{% if request.endpoint == 'dashboard_index' %} navbar__link--active{% endif %}">
+                <span class="navbar__link-icon" aria-hidden="true">🏠</span>
+                <span class="navbar__link-text">Dashboard</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="#" class="navbar__link{% if request.endpoint and request.endpoint.startswith('students_') %} navbar__link--active{% endif %}" aria-disabled="true" title="Coming in Phase 7">
+                <span class="navbar__link-icon" aria-hidden="true">👥</span>
+                <span class="navbar__link-text">Students</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="#" class="navbar__link{% if request.endpoint and request.endpoint.startswith('subjects_') %} navbar__link--active{% endif %}" aria-disabled="true" title="Coming in Phase 8">
+                <span class="navbar__link-icon" aria-hidden="true">📚</span>
+                <span class="navbar__link-text">Subjects</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="#" class="navbar__link{% if request.endpoint and request.endpoint.startswith('marks_') %} navbar__link--active{% endif %}" aria-disabled="true" title="Coming in Phase 9">
+                <span class="navbar__link-icon" aria-hidden="true">📝</span>
+                <span class="navbar__link-text">Marks</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="#" class="navbar__link{% if request.endpoint and request.endpoint.startswith('analysis_') %} navbar__link--active{% endif %}" aria-disabled="true" title="Coming in Phase 13">
+                <span class="navbar__link-icon" aria-hidden="true">📊</span>
+                <span class="navbar__link-text">Analysis</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="#" class="navbar__link{% if request.endpoint and request.endpoint.startswith('reports_') %} navbar__link--active{% endif %}" aria-disabled="true" title="Coming in Phase 14">
+                <span class="navbar__link-icon" aria-hidden="true">📄</span>
+                <span class="navbar__link-text">Reports</span>
+            </a>
+        </li>
+    </ul>
+
+    <ul class="navbar__menu navbar__menu--right">
+        <li class="navbar__item">
+            <span class="navbar__user" aria-hidden="true">
+                <span class="navbar__user-icon" aria-hidden="true">👤</span>
+                <span class="navbar__user-text" title="{{ session.username }}">{{ session.username }}</span>
+            </span>
+        </li>
+        <li class="navbar__item">
+            <form method="post" action="{{ url_for('auth.logout') }}" class="navbar__form">
+                <button type="submit" class="navbar__link navbar__link--logout">
+                    <span class="navbar__link-icon" aria-hidden="true">👋</span>
+                    <span class="navbar__link-text">Logout</span>
+                </button>
+            </form>
+        </li>
+    </ul>
+</nav>
