@@ -57,15 +57,7 @@ def calculate_dashboard_stats():
         else:
             students_with_results = 0
         
-        cursor.close()
-    finally:
-        conn.close()
-    
-    # Use Phase 10 calculation logic for analytics
-    conn = get_db_connection()
-    try:
-        cursor = conn.cursor()
-        
+        # Use Phase 10 calculation logic for analytics - REUSE SAME CONNECTION
         # Pass/Fail statistics
         pass_fail_stats = calculate_pass_fail_stats(conn)
         
