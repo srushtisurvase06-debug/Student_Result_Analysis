@@ -296,7 +296,7 @@ def generate_full_result(student_id: int, db_connection) -> Optional[dict]:
             'grade': grade,
             'status': status_info['status'],
             'status_reason': status_info['reason'],
-            'subjects': subject_results,  # Changed from 'subject_results' to 'subjects'
+            'subject_results': subject_results,
             'subject_count': marks_count,
             'subjects_total': subjects_total
         }
