@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Result Not Found - Student Result System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="error-page">
+        <div class="error-page__code">404</div>
+        <h1 class="error-page__heading">Result Not Found</h1>
+        <p class="error-page__message">The student result you are looking for does not exist or has not been published yet.</p>
+        <a href="{{ url_for('results.list_results') }}" class="error-page__action">
+            <span aria-hidden="true">📊</span>
+            <span>Back to Results</span>
+        </a>
+    </div>
+</div>
+{% endblock %}
