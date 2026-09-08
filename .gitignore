@@ -18,6 +18,16 @@ dist/
 build/
 *.log
 
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Development artifacts
+*_response.html
+*_error.html
+test_*.py.bak
+
 # Virtual environment
 venv/
 .venv/
