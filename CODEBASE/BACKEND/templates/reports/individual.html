@@ -1,0 +1,237 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Individual Student Report - Student Result System{% endblock %}
+
+{% block extra_css %}
+<style>
+.student-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.student-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.student-info-item__label {
+    font-size: 0.75rem;
+    color: var(--admin-text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.student-info-item__value {
+    font-size: 0.9375rem;
+    color: var(--admin-text-primary);
+    font-weight: 500;
+}
+
+.result-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.result-summary-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 1.25rem;
+    box-shadow: var(--admin-shadow-sm);
+    text-align: center;
+}
+
+.result-summary-card__label {
+    font-size: 0.8125rem;
+    color: var(--admin-text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.result-summary-card__value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--admin-text-primary);
+    line-height: 1;
+}
+
+.result-summary-card--primary .result-summary-card__value {
+    color: var(--admin-primary-accent);
+}
+
+.result-summary-card--success .result-summary-card__value {
+    color: var(--admin-success);
+}
+
+.result-summary-card--danger .result-summary-card__value {
+    color: var(--admin-danger);
+}
+
+@media print {
+    .admin-sidebar,
+    .admin-page-header__actions,
+    .admin-btn {
+        display: none !important;
+    }
+    
+    .admin-content {
+        margin: 0;
+        padding: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Individual Student Report</h1>
+        <p class="admin-page-header__subtitle">Detailed report for a specific student with printable format</p>
+    </div>
+    <div class="admin-page-header__actions">
+        <a href="{{ url_for('reports.index') }}" class="admin-btn admin-btn--secondary">
+            <span aria-hidden="true">←</span>
+            Back to Reports
+        </a>
+        {% if result %}
+        <button onclick="window.print()" class="admin-btn admin-btn--primary">
+            <span aria-hidden="true">🖨</span>
+            Print Report
+        </button>
+        {% endif %}
+    </div>
+</header>
+
+<!-- Student Selection -->
+{% if students %}
+<div class="admin-form-group">
+    <label for="student-select" class="admin-form-label">Select Student</label>
+    <select id="student-select" class="admin-form-input" onchange="window.location.href='{{ url_for('reports.individual') }}?student_id=' + this.value">
+        <option value="">-- Select a student --</option>
+        {% for s in students %}
+        <option value="{{ s.id }}" {% if student and s.id == student.id %}selected{% endif %}>
+            {{ s.roll_number }} - {{ s.name }}
+        </option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
+
+{% if result %}
+<!-- Student Information Card -->
+<div style="background: var(--admin-surface); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-lg); padding: 1.5rem; margin-bottom: 2rem; box-shadow: var(--admin-shadow-sm);">
+    <h2 style="margin: 0 0 1.5rem 0; font-size: 1.25rem; font-weight: 600; color: var(--admin-text-primary);">
+        Student Information
+    </h2>
+    <div class="student-info-grid">
+        <div class="student-info-item">
+            <span class="student-info-item__label">Roll Number</span>
+            <span class="student-info-item__value">{{ student.roll_number }}</span>
+        </div>
+        <div class="student-info-item">
+            <span class="student-info-item__label">Name</span>
+            <span class="student-info-item__value">{{ student.name }}</span>
+        </div>
+        <div class="student-info-item">
+            <span class="student-info-item__label">Email</span>
+            <span class="student-info-item__value">{{ student.email or 'N/A' }}</span>
+        </div>
+        <div class="student-info-item">
+            <span class="student-info-item__label">Date of Birth</span>
+            <span class="student-info-item__value">{{ student.date_of_birth or 'N/A' }}</span>
+        </div>
+        <div class="student-info-item">
+            <span class="student-info-item__label">Gender</span>
+            <span class="student-info-item__value">{{ student.gender or 'N/A' }}</span>
+        </div>
+        <div class="student-info-item">
+            <span class="student-info-item__label">Contact</span>
+            <span class="student-info-item__value">{{ student.contact_number or 'N/A' }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Result Summary -->
+<div class="result-summary-grid">
+    <div class="result-summary-card result-summary-card--primary">
+        <div class="result-summary-card__label">Total Marks</div>
+        <div class="result-summary-card__value" style="font-size: 1.5rem;">{{ result.total_obtained }}/{{ result.total_maximum }}</div>
+    </div>
+    
+    <div class="result-summary-card result-summary-card--primary">
+        <div class="result-summary-card__label">Percentage</div>
+        <div class="result-summary-card__value">{{ "%.1f"|format(result.percentage) }}%</div>
+    </div>
+    
+    <div class="result-summary-card">
+        <div class="result-summary-card__label">Grade</div>
+        <div class="result-summary-card__value">{{ result.grade }}</div>
+    </div>
+    
+    <div class="result-summary-card result-summary-card--{{ 'success' if result.status == 'PASS' else 'danger' }}">
+        <div class="result-summary-card__label">Status</div>
+        <div class="result-summary-card__value">{{ result.status }}</div>
+    </div>
+</div>
+
+<!-- Subject-wise Performance -->
+<div class="admin-table-card">
+    <h3 class="admin-table-card__title">Subject-wise Performance</h3>
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 120px;">Subject Code</th>
+                    <th>Subject Name</th>
+                    <th style="width: 140px; text-align: right;">Marks Obtained</th>
+                    <th style="width: 130px; text-align: right;">Maximum Marks</th>
+                    <th style="width: 100px; text-align: right;">Percentage</th>
+                    <th style="width: 80px; text-align: center;">Grade</th>
+                    <th style="width: 100px; text-align: center;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in result.subjects %}
+                <tr>
+                    <td style="font-family: var(--admin-font-mono); font-size: 0.875rem;">{{ subject.subject_code }}</td>
+                    <td style="font-weight: 500;">{{ subject.subject_name }}</td>
+                    <td style="text-align: right; font-weight: 500;">{{ subject.marks_obtained }}</td>
+                    <td style="text-align: right;">{{ subject.max_marks }}</td>
+                    <td style="text-align: right; font-weight: 600; color: var(--admin-primary-accent);">{{ "%.1f"|format(subject.percentage) }}%</td>
+                    <td style="text-align: center;">
+                        <span class="admin-badge admin-badge--{{ 'success' if subject.grade in ['A', 'B'] else 'warning' if subject.grade == 'C' else 'danger' if subject.grade == 'F' else 'neutral' }}">
+                            {{ subject.grade }}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="admin-badge admin-badge--{{ 'success' if subject.status == 'PASS' else 'danger' }}">
+                            {{ subject.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% elif student %}
+<div class="admin-empty-state">
+    <div class="admin-empty-state__icon">📄</div>
+    <p class="admin-empty-state__text">No results available for this student. All subject marks must be entered to generate a complete report.</p>
+</div>
+{% else %}
+<div class="admin-empty-state">
+    <div class="admin-empty-state__icon">👤</div>
+    <p class="admin-empty-state__text">Please select a student to view their report.</p>
+</div>
+{% endif %}
+{% endblock %}

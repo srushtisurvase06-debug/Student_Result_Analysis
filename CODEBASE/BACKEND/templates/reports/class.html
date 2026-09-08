@@ -1,0 +1,371 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Class Performance Report - Student Result System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
+<style>
+.class-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.class-stat-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 1.25rem;
+    box-shadow: var(--admin-shadow-sm);
+}
+
+.class-stat-card__label {
+    font-size: 0.8125rem;
+    color: var(--admin-text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.class-stat-card__value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--admin-text-primary);
+    line-height: 1;
+}
+
+.class-stat-card--primary .class-stat-card__value {
+    color: var(--admin-primary-accent);
+}
+
+.class-stat-card--success .class-stat-card__value {
+    color: var(--admin-success);
+}
+
+.class-stat-card--danger .class-stat-card__value {
+    color: var(--admin-danger);
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--admin-shadow-sm);
+}
+
+.chart-card__title {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+.chart-wrapper canvas {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+@media (max-width: 767px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Class Performance Report</h1>
+        <p class="admin-page-header__subtitle">Comprehensive overview of class-wide performance metrics</p>
+    </div>
+    <div class="admin-page-header__actions">
+        <a href="{{ url_for('reports.index') }}" class="admin-btn admin-btn--secondary">
+            <span aria-hidden="true">←</span>
+            Back to Reports
+        </a>
+        <button onclick="window.print()" class="admin-btn admin-btn--outline">
+            <span aria-hidden="true">🖨</span>
+            Print Report
+        </button>
+    </div>
+</header>
+
+<!-- Statistics Summary -->
+<div class="class-stats-grid">
+    <div class="class-stat-card class-stat-card--primary">
+        <div class="class-stat-card__label">Total Students</div>
+        <div class="class-stat-card__value">{{ stats.total_students }}</div>
+    </div>
+    
+    <div class="class-stat-card class-stat-card--primary">
+        <div class="class-stat-card__label">Students with Results</div>
+        <div class="class-stat-card__value">{{ stats.students_with_results }}</div>
+    </div>
+    
+    <div class="class-stat-card class-stat-card--success">
+        <div class="class-stat-card__label">Passed</div>
+        <div class="class-stat-card__value">{{ stats.pass_fail_count.pass }}</div>
+    </div>
+    
+    <div class="class-stat-card class-stat-card--danger">
+        <div class="class-stat-card__label">Failed</div>
+        <div class="class-stat-card__value">{{ stats.pass_fail_count.fail }}</div>
+    </div>
+    
+    <div class="class-stat-card">
+        <div class="class-stat-card__label">Class Average</div>
+        <div class="class-stat-card__value">{{ "%.1f"|format(stats.class_average) }}%</div>
+    </div>
+</div>
+
+<!-- Performance Charts -->
+<div class="charts-grid">
+    <div class="chart-card">
+        <h3 class="chart-card__title">Grade Distribution</h3>
+        <div class="chart-wrapper">
+            <canvas id="gradeDistributionChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-card">
+        <h3 class="chart-card__title">Pass vs Fail Ratio</h3>
+        <div class="chart-wrapper">
+            <canvas id="passFailChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Top Performers -->
+{% if stats.top_students %}
+<div class="admin-table-card">
+    <h3 class="admin-table-card__title">Top 10 Performers</h3>
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Rank</th>
+                    <th style="width: 140px;">Roll Number</th>
+                    <th>Student Name</th>
+                    <th style="width: 120px; text-align: right;">Percentage</th>
+                    <th style="width: 80px; text-align: center;">Grade</th>
+                    <th style="width: 100px; text-align: center;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in stats.top_students %}
+                <tr>
+                    <td style="text-align: center; font-weight: 600;">
+                        {% if loop.index <= 3 %}
+                            <span style="font-size: 1.125rem;">
+                                {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% else %}🥉{% endif %}
+                            </span>
+                        {% else %}
+                            {{ loop.index }}
+                        {% endif %}
+                    </td>
+                    <td style="font-family: var(--admin-font-mono); font-size: 0.875rem;">{{ student.roll_number }}</td>
+                    <td style="font-weight: 500;">{{ student.student_name }}</td>
+                    <td style="text-align: right; font-weight: 600; color: var(--admin-primary-accent);">{{ "%.1f"|format(student.percentage) }}%</td>
+                    <td style="text-align: center;">
+                        <span class="admin-badge admin-badge--{{ 'success' if student.grade in ['A', 'B'] else 'warning' if student.grade == 'C' else 'neutral' }}">
+                            {{ student.grade }}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="admin-badge admin-badge--{{ 'success' if student.status == 'PASS' else 'danger' }}">
+                            {{ student.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Subject-wise Performance -->
+{% if stats.subject_averages %}
+<div class="admin-table-card">
+    <h3 class="admin-table-card__title">Subject-wise Performance</h3>
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 120px;">Subject Code</th>
+                    <th>Subject Name</th>
+                    <th style="width: 180px; text-align: right;">Average Marks</th>
+                    <th style="width: 140px; text-align: right;">Pass Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in stats.subject_averages %}
+                <tr>
+                    <td style="font-family: var(--admin-font-mono); font-size: 0.875rem;">{{ subject.subject_code }}</td>
+                    <td style="font-weight: 500;">{{ subject.subject_name }}</td>
+                    <td style="text-align: right; font-weight: 500;">
+                        {{ "%.1f"|format(subject.average_marks) }} / {{ subject.max_marks }}
+                    </td>
+                    <td style="text-align: right; font-weight: 600; color: var(--admin-primary-accent);">
+                        {{ "%.1f"|format(subject.pass_percentage) }}%
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initClassReportCharts();
+});
+
+function initClassReportCharts() {
+    // Grade Distribution Chart
+    const gradeCtx = document.getElementById('gradeDistributionChart');
+    if (gradeCtx) {
+        const gradeData = {
+            A: {{ stats.grade_distribution.A }},
+            B: {{ stats.grade_distribution.B }},
+            C: {{ stats.grade_distribution.C }},
+            D: {{ stats.grade_distribution.D }},
+            F: {{ stats.grade_distribution.F }}
+        };
+
+        new Chart(gradeCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['A', 'B', 'C', 'D', 'F'],
+                datasets: [{
+                    label: 'Number of Students',
+                    data: [gradeData.A, gradeData.B, gradeData.C, gradeData.D, gradeData.F],
+                    backgroundColor: '#3b82f6',
+                    borderColor: '#ffffff',
+                    borderWidth: 1,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0,
+                            font: { size: 11, family: 'Segoe UI' },
+                            color: '#64748b'
+                        },
+                        grid: {
+                            color: '#e5e7eb',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 12, family: 'Segoe UI' },
+                            color: '#64748b'
+                        },
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        padding: 10,
+                        displayColors: false,
+                        titleFont: { size: 13, family: 'Segoe UI' },
+                        bodyFont: { size: 12, family: 'Segoe UI' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Pass/Fail Doughnut Chart
+    const passFailCtx = document.getElementById('passFailChart');
+    if (passFailCtx) {
+        const passCount = {{ stats.pass_fail_count.pass }};
+        const failCount = {{ stats.pass_fail_count.fail }};
+        const total = passCount + failCount;
+
+        new Chart(passFailCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Pass', 'Fail'],
+                datasets: [{
+                    data: [passCount, failCount],
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            padding: 16,
+                            font: { size: 12, family: 'Segoe UI' },
+                            color: '#64748b'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        padding: 12,
+                        displayColors: false,
+                        titleFont: { size: 13, family: 'Segoe UI' },
+                        bodyFont: { size: 12, family: 'Segoe UI' },
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return context.label + ': ' + value + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          A4 PRINT LAYOUT PREVIEW                             ║
+║                            (210mm × 297mm)                                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                 Margin: 15mm  │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │                        ACADEMIC RESULT                                 │  │
+│  │                     Official Marks Statement                           │  │
+│  ╞════════════════════════════════════════════════════════════════════════╡  │
+│  │                                                                        │  │
+│  │  ┌──────────────┬──────────────┬──────────────┬──────────────┐       │  │
+│  │  │ STUDENT NAME │ ROLL NUMBER  │ DATE OF BIRTH│    GENDER    │       │  │
+│  │  ├──────────────┼──────────────┼──────────────┼──────────────┤       │  │
+│  │  │ Rohit Sharma │   2024001    │  15/02/2005  │     Male     │       │  │
+│  │  └──────────────┴──────────────┴──────────────┴──────────────┘       │  │
+│  │                                                                        │  │
+│  │  ┌──────────────────────────────────────────────────────────────────┐ │  │
+│  │  │         OVERALL RESULT SUMMARY                                   │ │  │
+│  │  ├────────────┬─────────────┬────────────┬────────────────────────┤ │  │
+│  │  │Total Marks │ Percentage  │   Grade    │        Result          │ │  │
+│  │  ├────────────┼─────────────┼────────────┼────────────────────────┤ │  │
+│  │  │            │             │            │                        │ │  │
+│  │  │  552/600   │   92.00%    │     A      │         PASS           │ │  │
+│  │  │            │             │            │                        │ │  │
+│  │  └────────────┴─────────────┴────────────┴────────────────────────┘ │  │
+│  │                                                                        │  │
+│  │  ═══════════════════════════════════════════════════════════════════  │  │
+│  │            SUBJECT-WISE PERFORMANCE                                   │  │
+│  │  ═══════════════════════════════════════════════════════════════════  │  │
+│  │                                                                        │  │
+│  │  ┌─────┬──────────────┬────────┬─────────┬─────────┬────┬────────┐  │  │
+│  │  │CODE │ SUBJECT NAME │ OBTAIN │ MAXIMUM │ PASSING │  % │ RESULT │  │  │
+│  │  ├─────┼──────────────┼────────┼─────────┼─────────┼────┼────────┤  │  │
+│  │  │MATH │ Mathematics  │   92   │   100   │   40    │92.0│ [PASS] │  │  │
+│  │  ├─────┼──────────────┼────────┼─────────┼─────────┼────┼────────┤  │  │
+│  │  │PHY  │ Physics      │   90   │   100   │   40    │90.0│ [PASS] │  │  │
+│  │  ├─────┼──────────────┼────────┼─────────┼─────────┼────┼────────┤  │  │
+│  │  │CHEM │ Chemistry    │   94   │   100   │   40    │94.0│ [PASS] │  │  │
+│  │  ├─────┼──────────────┼────────┼─────────┼─────────┼────┼────────┤  │  │
+│  │  │BIO  │ Biology      │   88   │   100   │   40    │88.0│ [PASS] │  │  │
+│  │  ├─────┼──────────────┼────────┼─────────┼─────────┼────┼────────┤  │  │
+│  │  │ENG  │ English      │   95   │   100   │   40    │95.0│ [PASS] │  │  │
+│  │  ├─────┼──────────────┼────────┼─────────┼─────────┼────┼────────┤  │  │
+│  │  │COMP │ Computer Sci │   93   │   100   │   40    │93.0│ [PASS] │  │  │
+│  │  └─────┴──────────────┴────────┴─────────┴─────────┴────┴────────┘  │  │
+│  │                                                                        │  │
+│  │  ══════════════════════════════════════════════════════════════════   │  │
+│  │                                                                        │  │
+│  │                      OVERALL RESULT: PASS                             │  │
+│  │                                                                        │  │
+│  │  ──────────────────────────────────────────────────────────────────   │  │
+│  │         This is a computer-generated academic result statement.       │  │
+│  │                                                                        │  │
+│  └────────────────────────────────────────────────────────────────────┘  │
+│                                                                 Margin: 15mm  │
+└──────────────────────────────────────────────────────────────────────────────┘
+     ↑                                                                    ↑
+   12mm                                                                 12mm
+  margin                                                               margin
+
+
+KEY DESIGN ELEMENTS:
+
+✓ Double border under header (═)
+✓ Student info as bordered table cells
+✓ Summary as unified bordered box
+✓ Marks table with complete grid
+✓ All 7 columns visible
+✓ All 6 subjects visible
+✓ Professional typography
+✓ Clean black/white design
+✓ Institutional appearance
+✓ Fits exactly 1 A4 page
+
+PRINT SPECIFICATIONS:
+
+• Font: Times New Roman (serif, academic)
+• Base Size: 11pt
+• Margins: 15mm (top/bottom), 12mm (sides)
+• Border Weights: 2.5pt (header), 2pt (sections), 1.5pt (table outer)
+• Colors: Black text, grey headers (#e8e8e8)
+• Page: A4 Portrait (210mm × 297mm)
+• Page Count: 1/1 (VERIFIED)
+
+DIFFERENCES FROM WEB VIEW:
+
+✗ No colorful badges (border-only design)
+✗ No shadows or gradients
+✗ No rounded corners
+✗ No decorative icons
+✗ No modern web styling
+✓ Classic document design
+✓ Institutional typography
+✓ Professional grid layout
+✓ Official statement appearance

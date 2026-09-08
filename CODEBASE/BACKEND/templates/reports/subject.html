@@ -1,0 +1,181 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Subject Performance Report - Student Result System{% endblock %}
+
+{% block extra_css %}
+<style>
+.subject-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.subject-stat-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 1rem;
+    box-shadow: var(--admin-shadow-sm);
+    text-align: center;
+}
+
+.subject-stat-card__label {
+    font-size: 0.75rem;
+    color: var(--admin-text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.subject-stat-card__value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--admin-text-primary);
+    line-height: 1;
+}
+
+.subject-stat-card--success .subject-stat-card__value {
+    color: var(--admin-success);
+}
+
+.subject-stat-card--danger .subject-stat-card__value {
+    color: var(--admin-danger);
+}
+
+.subject-stat-card--primary .subject-stat-card__value {
+    color: var(--admin-primary-accent);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Subject Performance Report</h1>
+        <p class="admin-page-header__subtitle">Detailed analysis of student performance by subject</p>
+    </div>
+    <div class="admin-page-header__actions">
+        <a href="{{ url_for('reports.index') }}" class="admin-btn admin-btn--secondary">
+            <span aria-hidden="true">←</span>
+            Back to Reports
+        </a>
+    </div>
+</header>
+
+<!-- Subject Selection -->
+{% if subjects %}
+<div class="admin-form-group">
+    <label for="subject-select" class="admin-form-label">Select Subject</label>
+    <select id="subject-select" class="admin-form-input" onchange="window.location.href='{{ url_for('reports.subject') }}?subject_id=' + this.value">
+        {% for s in subjects %}
+        <option value="{{ s.id }}" {% if subject and s.id == subject.id %}selected{% endif %}>
+            {{ s.subject_code }} - {{ s.subject_name }}
+        </option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
+
+{% if subject and stats %}
+<!-- Subject Info -->
+<div style="background: var(--admin-surface); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-lg); padding: 1.25rem; margin-bottom: 2rem; box-shadow: var(--admin-shadow-sm);">
+    <h2 style="margin: 0 0 0.5rem 0; font-size: 1.5rem; font-weight: 600; color: var(--admin-text-primary);">
+        {{ subject.subject_name }}
+    </h2>
+    <p style="margin: 0; font-size: 0.875rem; color: var(--admin-text-secondary); font-family: var(--admin-font-mono);">
+        {{ subject.subject_code }} • Maximum Marks: {{ subject.max_marks }}
+    </p>
+</div>
+
+<!-- Statistics Summary -->
+<div class="subject-stats-grid">
+    <div class="subject-stat-card subject-stat-card--primary">
+        <div class="subject-stat-card__label">Total Students</div>
+        <div class="subject-stat-card__value">{{ stats.total_students }}</div>
+    </div>
+    
+    <div class="subject-stat-card subject-stat-card--success">
+        <div class="subject-stat-card__label">Passed</div>
+        <div class="subject-stat-card__value">{{ stats.pass_count }}</div>
+    </div>
+    
+    <div class="subject-stat-card subject-stat-card--danger">
+        <div class="subject-stat-card__label">Failed</div>
+        <div class="subject-stat-card__value">{{ stats.fail_count }}</div>
+    </div>
+    
+    <div class="subject-stat-card subject-stat-card--primary">
+        <div class="subject-stat-card__label">Highest Score</div>
+        <div class="subject-stat-card__value">{{ stats.highest_score }}</div>
+    </div>
+    
+    <div class="subject-stat-card subject-stat-card--danger">
+        <div class="subject-stat-card__label">Lowest Score</div>
+        <div class="subject-stat-card__value">{{ stats.lowest_score }}</div>
+    </div>
+    
+    <div class="subject-stat-card">
+        <div class="subject-stat-card__label">Average</div>
+        <div class="subject-stat-card__value">{{ "%.1f"|format(stats.average_score) }}</div>
+    </div>
+</div>
+
+<!-- Student Performance Table -->
+<div class="admin-table-card">
+    <h3 class="admin-table-card__title">Student Performance</h3>
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th style="width: 140px;">Roll Number</th>
+                    <th style="width: 120px; text-align: right;">Marks Obtained</th>
+                    <th style="width: 100px; text-align: right;">Percentage</th>
+                    <th style="width: 80px; text-align: center;">Grade</th>
+                    <th style="width: 100px; text-align: center;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td style="font-weight: 500;">{{ result.student_name }}</td>
+                    <td style="font-family: var(--admin-font-mono); font-size: 0.875rem;">{{ result.roll_number }}</td>
+                    <td style="text-align: right; font-weight: 500;">{{ result.marks_obtained }}</td>
+                    <td style="text-align: right; font-weight: 600; color: var(--admin-primary-accent);">{{ "%.1f"|format(result.percentage) }}%</td>
+                    <td style="text-align: center;">
+                        <span class="admin-badge admin-badge--{{ 'success' if result.grade in ['A', 'B'] else 'warning' if result.grade == 'C' else 'danger' if result.grade == 'F' else 'neutral' }}">
+                            {{ result.grade }}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="admin-badge admin-badge--{{ 'success' if result.status == 'PASS' else 'danger' }}">
+                            {{ result.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 2rem; color: var(--admin-text-secondary);">
+                        No student data available for this subject
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% elif subject %}
+<div class="admin-empty-state">
+    <div class="admin-empty-state__icon">📊</div>
+    <p class="admin-empty-state__text">No performance data available for this subject.</p>
+</div>
+{% else %}
+<div class="admin-empty-state">
+    <div class="admin-empty-state__icon">📚</div>
+    <p class="admin-empty-state__text">Please select a subject to view the performance report.</p>
+</div>
+{% endif %}
+{% endblock %}

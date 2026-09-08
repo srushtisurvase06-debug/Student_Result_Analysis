@@ -1,0 +1,232 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Reports - Student Result System{% endblock %}
+
+{% block extra_css %}
+<style>
+.reports-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.reports-stat-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 1.25rem;
+    box-shadow: var(--admin-shadow-sm);
+}
+
+.reports-stat-card__label {
+    font-size: 0.8125rem;
+    color: var(--admin-text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.reports-stat-card__value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--admin-text-primary);
+    line-height: 1;
+}
+
+.reports-stat-card--primary .reports-stat-card__value {
+    color: var(--admin-primary-accent);
+}
+
+.reports-stat-card--success .reports-stat-card__value {
+    color: var(--admin-success);
+}
+
+.reports-stat-card--danger .reports-stat-card__value {
+    color: var(--admin-danger);
+}
+
+.reports-section {
+    margin-bottom: 2rem;
+}
+
+.reports-section__title {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+}
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.report-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--admin-shadow-sm);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.report-card:hover {
+    box-shadow: var(--admin-shadow-md);
+    border-color: var(--admin-primary-accent);
+    transform: translateY(-2px);
+}
+
+.report-card__icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.report-card__title {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+    margin: 0;
+}
+
+.report-card__description {
+    font-size: 0.875rem;
+    color: var(--admin-text-secondary);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.report-card__action {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--admin-primary-accent);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: gap 0.2s ease;
+}
+
+.report-card:hover .report-card__action {
+    gap: 0.75rem;
+}
+
+@media (max-width: 767px) {
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .reports-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Reports</h1>
+        <p class="admin-page-header__subtitle">Generate and view academic performance reports</p>
+    </div>
+</header>
+
+<!-- Quick Statistics -->
+<div class="reports-stats-grid">
+    <div class="reports-stat-card reports-stat-card--primary">
+        <div class="reports-stat-card__label">Total Students</div>
+        <div class="reports-stat-card__value">{{ stats.total_students }}</div>
+    </div>
+    
+    <div class="reports-stat-card reports-stat-card--success">
+        <div class="reports-stat-card__label">Passed</div>
+        <div class="reports-stat-card__value">{{ stats.pass_count }}</div>
+    </div>
+    
+    <div class="reports-stat-card reports-stat-card--danger">
+        <div class="reports-stat-card__label">Failed</div>
+        <div class="reports-stat-card__value">{{ stats.fail_count }}</div>
+    </div>
+    
+    <div class="reports-stat-card">
+        <div class="reports-stat-card__label">Class Average</div>
+        <div class="reports-stat-card__value">{{ "%.1f"|format(stats.class_average) }}%</div>
+    </div>
+</div>
+
+<!-- Academic Reports Section -->
+<div class="reports-section">
+    <h2 class="reports-section__title">Academic Reports</h2>
+    <div class="reports-grid">
+        <a href="{{ url_for('reports.class_rank') }}" class="report-card">
+            <div class="report-card__icon">🏆</div>
+            <h3 class="report-card__title">Class Rank Report</h3>
+            <p class="report-card__description">Student ranking based on overall academic performance</p>
+            <span class="report-card__action">
+                View Report
+                <span aria-hidden="true">→</span>
+            </span>
+        </a>
+        
+        <a href="{{ url_for('reports.subject') }}" class="report-card">
+            <div class="report-card__icon">📊</div>
+            <h3 class="report-card__title">Subject Performance Report</h3>
+            <p class="report-card__description">Detailed analysis of student performance by subject</p>
+            <span class="report-card__action">
+                View Report
+                <span aria-hidden="true">→</span>
+            </span>
+        </a>
+    </div>
+</div>
+
+<!-- Performance Reports Section -->
+<div class="reports-section">
+    <h2 class="reports-section__title">Performance Reports</h2>
+    <div class="reports-grid">
+        <a href="{{ url_for('reports.grade_distribution') }}" class="report-card">
+            <div class="report-card__icon">📋</div>
+            <h3 class="report-card__title">Grade Distribution</h3>
+            <p class="report-card__description">Visual breakdown of grades across all students</p>
+            <span class="report-card__action">
+                View Report
+                <span aria-hidden="true">→</span>
+            </span>
+        </a>
+        
+        <a href="{{ url_for('reports.class_report') }}" class="report-card">
+            <div class="report-card__icon">📈</div>
+            <h3 class="report-card__title">Class Performance Report</h3>
+            <p class="report-card__description">Comprehensive overview of class-wide performance metrics</p>
+            <span class="report-card__action">
+                View Report
+                <span aria-hidden="true">→</span>
+            </span>
+        </a>
+    </div>
+</div>
+
+<!-- Student Reports Section -->
+<div class="reports-section">
+    <h2 class="reports-section__title">Student Reports</h2>
+    <div class="reports-grid">
+        <a href="{{ url_for('reports.individual') }}" class="report-card">
+            <div class="report-card__icon">📄</div>
+            <h3 class="report-card__title">Individual Student Report</h3>
+            <p class="report-card__description">Detailed report for a specific student with printable format</p>
+            <span class="report-card__action">
+                View Report
+                <span aria-hidden="true">→</span>
+            </span>
+        </a>
+    </div>
+</div>
+{% endblock %}

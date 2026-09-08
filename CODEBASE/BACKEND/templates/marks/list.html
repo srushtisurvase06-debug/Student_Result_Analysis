@@ -1,0 +1,111 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Marks - Student Result System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Marks Management</h1>
+        <p class="admin-page-header__subtitle">View and manage student marks across all subjects</p>
+    </div>
+    <div class="admin-page-header__actions">
+        <a href="{{ url_for('marks.add_marks') }}" class="admin-btn admin-btn--primary">
+            <span aria-hidden="true">➕</span>
+            <span>Add Marks</span>
+        </a>
+    </div>
+</header>
+
+<!-- Search -->
+<div class="admin-search">
+    <form class="admin-search__form">
+        <input type="text" 
+               name="search"
+               class="admin-search__input" 
+               value="{{ search if search else '' }}"
+               placeholder="Search by student name, roll number, or subject...">
+        <button type="submit" class="admin-search__btn">
+            <span aria-hidden="true">🔍</span>
+        </button>
+    </form>
+</div>
+
+<!-- Marks Table -->
+<div class="admin-table-container">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Roll Number</th>
+                <th>Subject Code</th>
+                <th>Subject</th>
+                <th style="text-align: right;">Obtained</th>
+                <th style="text-align: right;">Max</th>
+                <th style="text-align: right;">Percentage</th>
+                <th style="text-align: center;">Status</th>
+                <th style="text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mark in marks %}
+            <tr>
+                <td>
+                    <strong>{{ mark.student_name }}</strong>
+                </td>
+                <td>
+                    <span class="admin-badge admin-badge--secondary">{{ mark.roll_number }}</span>
+                </td>
+                <td>
+                    <span class="admin-badge admin-badge--code">{{ mark.subject_code }}</span>
+                </td>
+                <td>{{ mark.subject_name }}</td>
+                <td style="text-align: right;">
+                    {% if mark.marks_obtained is not none %}
+                    <strong>{{ mark.marks_obtained }}</strong>
+                    {% else %}
+                    <span style="color: var(--admin-text-muted);">Absent</span>
+                    {% endif %}
+                </td>
+                <td style="text-align: right;">{{ mark.max_marks }}</td>
+                <td style="text-align: right;">
+                    {% if mark.marks_obtained is not none %}
+                    <strong>{{ (mark.marks_obtained * 100 / mark.max_marks) | round(2) }}%</strong>
+                    {% else %}
+                    <span style="color: var(--admin-text-muted);">-</span>
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">
+                    {% if mark.marks_obtained is not none %}
+                    {% set pct = (mark.marks_obtained * 100 / mark.max_marks) %}
+                    <span class="admin-badge admin-badge--{{ 'success' if pct >= 40 else 'danger' }}">
+                        {{ 'PASS' if pct >= 40 else 'FAIL' }}
+                    </span>
+                    {% else %}
+                    <span class="admin-badge admin-badge--warning">Absent</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="admin-table__actions">
+                        <a href="{{ url_for('marks.edit_marks', marks_id=mark.id) }}" 
+                           class="admin-btn admin-btn--secondary admin-btn--small admin-btn--icon" 
+                           title="Edit">
+                            ✏️
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="9">
+                    <div class="admin-empty-state">
+                        <div class="admin-empty-state__icon">📝</div>
+                        <p class="admin-empty-state__text">No marks entered yet. <a href="{{ url_for('marks.add_marks') }}">Add marks</a> to get started.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends 'public_base.html' %}
+
+{% block title %}Admin Login - Student Result System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-header__icon">📊</div>
+            <h1 class="auth-header__title">Student Result System</h1>
+            <p class="auth-header__subtitle">Academic Performance Management</p>
+        </div>
+
+        <form method="post" action="{{ url_for('auth.login') }}" class="auth-form" novalidate>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert alert-error" role="alert">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="form-group form-group--large">
+                <label for="username" class="form-label--large">Username or Email</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    class="form-input form-input--large"
+                    placeholder="Enter your username or email"
+                    autocomplete="username"
+                    required
+                    autofocus
+                >
+            </div>
+
+            <div class="form-group form-group--large">
+                <label for="password" class="form-label--large">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-input form-input--large"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary btn--block btn--large">
+                <span class="btn__icon" aria-hidden="true">🔐</span>
+                Sign In
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p class="auth-footer__text">&copy; Student Result System {{ now().year if now else '2026' }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    padding: 2rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-header {
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+}
+
+.auth-header__icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.auth-header__title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.auth-header__subtitle {
+    margin: 0;
+    color: #93c5fd;
+    font-size: 0.9375rem;
+    font-weight: 400;
+}
+
+.auth-form {
+    padding: 0 2rem 2rem;
+}
+
+.auth-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.auth-form .form-label--large {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.auth-form .form-input--large {
+    height: 48px;
+    padding: 0 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+}
+
+.auth-form .btn--block {
+    width: 100%;
+    height: 48px;
+    font-size: 1.0625rem;
+    font-weight: 600;
+}
+
+.auth-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    background-color: #f9fafb;
+}
+
+.auth-footer__text {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.8125rem;
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1rem;
+    }
+    
+    .auth-card {
+        border-radius: 8px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+    
+    .auth-header {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+    
+    .auth-header__icon {
+        font-size: 3rem;
+    }
+    
+    .auth-header__title {
+        font-size: 1.25rem;
+    }
+}
+</style>
+{% endblock %}

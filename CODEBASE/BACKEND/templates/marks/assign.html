@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Assign Marks - Student Result System{% endblock %}
+
+{% block content %}
+<div class="marks-page page-content">
+    <header class="page-header">
+        <h1>Assign Marks for {{ student.name }}</h1>
+        <a href="{{ url_for('results.student_result', student_id=student.id) }}" class="btn btn--secondary">
+            <span aria-hidden="true">⬅️</span>
+            <span>Back to Result</span>
+        </a>
+    </header>
+
+    <div class="form-card">
+        <form method="POST" class="form form--grid" novalidate>
+            {{ form.hidden_tag() }}
+
+            {% for field in form.marks if field.type != 'HiddenField' %}
+            <div class="form__group">
+                <label for="{{ field.id }}" class="form__label">
+                    {{ field.label.text }} <span aria-hidden="true" class="form__required">*</span>
+                </label>
+                <div class="form__input-wrapper">
+                    {{ field(
+                        class="form__input form__input--number" | safe,
+                        min=0,
+                        max=field.max_value,
+                        placeholder="Enter marks",
+                        aria_describedby="{{ field.id }}-error" if field.errors else None
+                    ) }}
+                    <span class="form__input-suffix">
+                        / {{ field.max_value }}
+                    </span>
+                </div>
+                {% if field.errors %}
+                    <p class="form__error" id="{{ field.id }}-error" role="alert">
+                        {{ field.errors[0] }}
+                    </p>
+                {% endif %}
+                <p class="form__hint">
+                    Max: {{ field.max_value }} | Pass: {{ field.passing_marks }}
+                </p>
+            </div>
+            {% endfor %}
+
+            <!-- Form Actions -->
+            <div class="form__actions">
+                <a href="{{ url_for('results.student_result', student_id=student.id) }}" class="btn btn--secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn--primary">
+                    Save Marks
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Class Rank Report - Student Result System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Class Rank Report</h1>
+        <p class="admin-page-header__subtitle">Student ranking based on overall academic performance</p>
+    </div>
+    <div class="admin-page-header__actions">
+        <a href="{{ url_for('reports.index') }}" class="admin-btn admin-btn--secondary">
+            <span aria-hidden="true">←</span>
+            Back to Reports
+        </a>
+        <button onclick="window.print()" class="admin-btn admin-btn--outline">
+            <span aria-hidden="true">🖨</span>
+            Print Report
+        </button>
+    </div>
+</header>
+
+<!-- Rank Table -->
+{% if students %}
+<div class="admin-table-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Rank</th>
+                    <th>Student Name</th>
+                    <th style="width: 140px;">Roll Number</th>
+                    <th style="width: 120px; text-align: right;">Total Marks</th>
+                    <th style="width: 120px; text-align: right;">Percentage</th>
+                    <th style="width: 80px; text-align: center;">Grade</th>
+                    <th style="width: 100px; text-align: center;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td style="text-align: center; font-weight: 600;">
+                        {% if loop.index == 1 %}
+                            <span style="font-size: 1.25rem;">🥇</span>
+                        {% elif loop.index == 2 %}
+                            <span style="font-size: 1.25rem;">🥈</span>
+                        {% elif loop.index == 3 %}
+                            <span style="font-size: 1.25rem;">🥉</span>
+                        {% else %}
+                            {{ loop.index }}
+                        {% endif %}
+                    </td>
+                    <td style="font-weight: 500;">{{ student.student_name }}</td>
+                    <td style="font-family: var(--admin-font-mono); font-size: 0.875rem;">{{ student.roll_number }}</td>
+                    <td style="text-align: right; font-weight: 500;">{{ student.total_marks }}</td>
+                    <td style="text-align: right; font-weight: 600; color: var(--admin-primary-accent);">{{ "%.2f"|format(student.percentage) }}%</td>
+                    <td style="text-align: center;">
+                        <span class="admin-badge admin-badge--{{ 'success' if student.grade in ['A', 'B'] else 'warning' if student.grade == 'C' else 'danger' if student.grade == 'F' else 'neutral' }}">
+                            {{ student.grade }}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="admin-badge admin-badge--{{ 'success' if student.status == 'PASS' else 'danger' }}">
+                            {{ student.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="admin-empty-state">
+    <div class="admin-empty-state__icon">📊</div>
+    <p class="admin-empty-state__text">No student data available. Complete results are required to generate rankings.</p>
+</div>
+{% endif %}
+{% endblock %}

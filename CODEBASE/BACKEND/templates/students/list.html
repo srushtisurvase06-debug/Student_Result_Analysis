@@ -1,0 +1,118 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Students - Student Result System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Students</h1>
+        <p class="admin-page-header__subtitle">Manage student records and information</p>
+    </div>
+    <div class="admin-page-header__actions">
+        <a href="{{ url_for('students.add_student') }}" class="admin-btn admin-btn--primary">
+            <span aria-hidden="true">➕</span>
+            <span>Add Student</span>
+        </a>
+    </div>
+</header>
+
+<!-- Search Card -->
+<div class="admin-search">
+    <form method="GET" class="admin-search__form">
+        <input 
+            type="text" 
+            name="search" 
+            class="admin-search__input" 
+            placeholder="Search by name or roll number..."
+            value="{{ search if search else '' }}"
+        >
+        {% if gender %}
+            <input type="hidden" name="gender" value="{{ gender }}">
+        {% endif %}
+        <button type="submit" class="admin-search__btn">
+            <span aria-hidden="true">🔍</span>
+        </button>
+    </form>
+</div>
+
+<!-- Filter Card -->
+<div class="admin-card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
+    <form method="GET" style="display: flex; gap: 1rem; align-items: center;">
+        <label style="color: var(--admin-text-secondary); font-size: 0.875rem; font-weight: 500;">Filter by Gender</label>
+        <select name="gender" 
+                style="padding: 0.75rem 1rem; border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); font-size: 0.9375rem;">
+            <option value="">All</option>
+            <option value="Male" {% if gender == 'Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if gender == 'Female' %}selected{% endif %}>Female</option>
+            <option value="Other" {% if gender == 'Other' %}selected{% endif %}>Other</option>
+        </select>
+        {% if search %}
+            <input type="hidden" name="search" value="{{ search }}">
+        {% endif %}
+        <button type="submit" class="admin-btn admin-btn--primary admin-btn--small">Apply Filter</button>
+        {% if search or gender %}
+            <a href="{{ url_for('students.list_students') }}" class="admin-btn admin-btn--secondary admin-btn--small">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Students Table -->
+<div class="admin-table-container">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>NAME</th>
+                <th>ROLL NUMBER</th>
+                <th>GENDER</th>
+                <th>CLASS</th>
+                <th style="text-align: center;">ACTIONS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td><strong>{{ student.name }}</strong></td>
+                <td>
+                    <span class="admin-badge admin-badge--secondary">{{ student.roll_number }}</span>
+                </td>
+                <td>{{ student.gender or '-' }}</td>
+                <td>{{ student.class_name or '-' }}</td>
+                <td>
+                    <div class="admin-table__actions">
+                        <a href="{{ url_for('students.edit_student', student_id=student.id) }}" 
+                           class="admin-btn admin-btn--secondary admin-btn--small admin-btn--icon" 
+                           title="Edit Student">
+                            ✏️
+                        </a>
+                        <a href="{{ url_for('results.detail', student_id=student.id) }}" 
+                           class="admin-btn admin-btn--success admin-btn--small admin-btn--icon" 
+                           title="View Result">
+                            👁️
+                        </a>
+                        <button type="button" 
+                                class="admin-btn admin-btn--danger admin-btn--small admin-btn--icon" 
+                                title="Delete Student"
+                                data-delete-url="{{ url_for('students.delete_student', student_id=student.id) }}"
+                                data-delete-name="{{ student.name }}">
+                            🗑️
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">
+                    <div class="admin-empty-state">
+                        <div class="admin-empty-state__icon">📚</div>
+                        <p class="admin-empty-state__text">
+                            No students found. <a href="{{ url_for('students.add_student') }}">Add a student</a> to get started.
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

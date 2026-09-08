@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Add Marks - Student Result System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <div>
+            <h1>Add Marks</h1>
+            <p class="page-header__description">Assign marks to a student for a subject</p>
+        </div>
+        <a href="{{ url_for('marks.list_marks') }}" class="btn btn--secondary btn--icon">
+            <span aria-hidden="true">⬅️</span>
+            <span>Back to List</span>
+        </a>
+    </header>
+
+    <div class="page-content">
+        <form method="POST" class="form" novalidate>
+            <div class="form-row">
+                <div class="form-group form-group--full">
+                    <label for="student_id" class="form-label form-label--required">Student</label>
+                    <select id="student_id" name="student_id" class="form-input" required>
+                        <option value="">-- Select Student --</option>
+                        {% for student in students %}
+                        <option value="{{ student.id }}" {% if selected_student == student.id|string %}selected{% endif %}>
+                            {{ student.roll_number }} - {{ student.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if errors and errors.student_id %}
+                    <span class="form-error">{{ errors.student_id }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group form-group--full">
+                    <label for="subject_id" class="form-label form-label--required">Subject</label>
+                    <select id="subject_id" name="subject_id" class="form-input" required>
+                        <option value="">-- Select Subject --</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}" data-max="{{ subject.max_marks }}" {% if selected_subject == subject.id|string %}selected{% endif %}>
+                            {{ subject.subject_code }} - {{ subject.subject_name }} (Max: {{ subject.max_marks }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if errors and errors.subject_id %}
+                    <span class="form-error">{{ errors.subject_id }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if subject_info %}
+            <div class="alert alert--info">
+                <p class="alert__message">
+                    <strong>Subject Info:</strong> {{ subject_info.subject_name }} ({{ subject_info.subject_code }}) - Maximum Marks: {{ subject_info.max_marks }}
+                </p>
+            </div>
+            {% endif %}
+
+            <div class="form-row">
+                <div class="form-group form-group--full">
+                    <label for="marks_obtained" class="form-label form-label--required">Marks Obtained</label>
+                    <input type="number" 
+                           id="marks_obtained" 
+                           name="marks_obtained" 
+                           class="form-input {% if errors and errors.marks_obtained %}form-input--error{% endif %}" 
+                           value="{{ marks_obtained if marks_obtained is defined else '' }}"
+                           min="0"
+                           {% if subject_info %}max="{{ subject_info.max_marks }}"{% endif %}
+                           placeholder="Enter marks obtained"
+                           {% if is_absent %}disabled{% endif %}
+                           required>
+                    {% if errors and errors.marks_obtained %}
+                    <span class="form-error">{{ errors.marks_obtained }}</span>
+                    {% endif %}
+                    <span class="form-text">Enter the marks obtained by the student (0 or above)</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-checkbox">
+                    <input type="checkbox" 
+                           id="is_absent" 
+                           name="is_absent"
+                           {% if is_absent %}checked{% endif %}>
+                    <span>Mark student as absent (marks will be set to 0)</span>
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('marks.list_marks') }}" class="btn btn--outline">Cancel</a>
+                <button type="submit" class="btn btn--primary">
+                    <span aria-hidden="true">💾</span>
+                    <span>Save Marks</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Handle absent checkbox
+document.getElementById('is_absent').addEventListener('change', function() {
+    const marksInput = document.getElementById('marks_obtained');
+    if (this.checked) {
+        marksInput.value = '0';
+        marksInput.disabled = true;
+    } else {
+        marksInput.disabled = false;
+    }
+});
+</script>
+{% endblock %}

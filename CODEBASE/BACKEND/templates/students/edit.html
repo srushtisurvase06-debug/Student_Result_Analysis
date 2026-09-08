@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Student - Student Result System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/students.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="professional-form-page">
+    <!-- Page Header -->
+    <header class="professional-form-header">
+        <a href="{{ url_for('students.list_students') }}" class="professional-form-back">
+            <span aria-hidden="true">←</span>
+            <span>Back to Students</span>
+        </a>
+        
+        <h1 class="professional-form-title">Edit Student</h1>
+        <p class="professional-form-subtitle">Update the student's personal and academic information.</p>
+    </header>
+    
+    <!-- Form Card -->
+    <div class="professional-form-card">
+        <div class="professional-form-card__header">
+            <h2 class="professional-form-card__title">Student Information</h2>
+            <p class="professional-form-card__description">Update the student's details below.</p>
+        </div>
+        
+        <form method="POST" class="professional-form" novalidate>
+            <!-- Student Name -->
+            <div class="professional-form__group">
+                <label for="name" class="professional-form__label">
+                    Student Name <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    class="professional-form__input {% if errors and errors.name %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.name if form_data else student.name }}"
+                    placeholder="Enter student name" 
+                    required
+                >
+                {% if errors and errors.name %}
+                    <p class="professional-form__error" role="alert">{{ errors.name }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Roll Number -->
+            <div class="professional-form__group">
+                <label for="roll_number" class="professional-form__label">
+                    Roll Number <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="roll_number" 
+                    name="roll_number" 
+                    class="professional-form__input {% if errors and errors.roll_number %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.roll_number if form_data else student.roll_number }}"
+                    placeholder="Enter roll number" 
+                    required
+                >
+                {% if errors and errors.roll_number %}
+                    <p class="professional-form__error" role="alert">{{ errors.roll_number }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Email -->
+            <div class="professional-form__group">
+                <label for="email" class="professional-form__label">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="professional-form__input {% if errors and errors.email %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.email if form_data else student.email }}"
+                    placeholder="student@example.com"
+                >
+                {% if errors and errors.email %}
+                    <p class="professional-form__error" role="alert">{{ errors.email }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Date of Birth -->
+            <div class="professional-form__group">
+                <label for="date_of_birth" class="professional-form__label">Date of Birth</label>
+                <input 
+                    type="date" 
+                    id="date_of_birth" 
+                    name="date_of_birth" 
+                    class="professional-form__input {% if errors and errors.date_of_birth %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.date_of_birth if form_data else student.date_of_birth | string | slice(0, 10) if student.date_of_birth else '' }}"
+                >
+                {% if errors and errors.date_of_birth %}
+                    <p class="professional-form__error" role="alert">{{ errors.date_of_birth }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Gender -->
+            <div class="professional-form__group professional-form__group--full">
+                <label class="professional-form__label">Gender</label>
+                <div class="professional-form__radio-group">
+                    <label class="professional-form__radio-label">
+                        <input 
+                            type="radio" 
+                            name="gender" 
+                            value="Male" 
+                            class="professional-form__radio-input"
+                            {% if (form_data and form_data.gender == 'Male') or (not form_data and student.gender == 'Male') %}checked{% endif %}
+                        >
+                        <span>Male</span>
+                    </label>
+                    <label class="professional-form__radio-label">
+                        <input 
+                            type="radio" 
+                            name="gender" 
+                            value="Female" 
+                            class="professional-form__radio-input"
+                            {% if (form_data and form_data.gender == 'Female') or (not form_data and student.gender == 'Female') %}checked{% endif %}
+                        >
+                        <span>Female</span>
+                    </label>
+                    <label class="professional-form__radio-label">
+                        <input 
+                            type="radio" 
+                            name="gender" 
+                            value="Other" 
+                            class="professional-form__radio-input"
+                            {% if (form_data and form_data.gender == 'Other') or (not form_data and student.gender == 'Other') %}checked{% endif %}
+                        >
+                        <span>Other</span>
+                    </label>
+                </div>
+                {% if errors and errors.gender %}
+                    <p class="professional-form__error" role="alert">{{ errors.gender }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Contact Number -->
+            <div class="professional-form__group professional-form__group--full">
+                <label for="contact_number" class="professional-form__label">Contact Number</label>
+                <input 
+                    type="tel" 
+                    id="contact_number" 
+                    name="contact_number" 
+                    class="professional-form__input {% if errors and errors.contact_number %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.contact_number if form_data else student.contact_number }}"
+                    placeholder="10-digit phone number"
+                >
+                {% if errors and errors.contact_number %}
+                    <p class="professional-form__error" role="alert">{{ errors.contact_number }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="professional-form__actions">
+                <a href="{{ url_for('students.list_students') }}" class="professional-form-btn professional-form-btn--cancel">
+                    Cancel
+                </a>
+                <button type="submit" class="professional-form-btn professional-form-btn--primary">
+                    Update Student
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

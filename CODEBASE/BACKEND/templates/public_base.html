@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" class="js-focus-visible">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Result Analysis System - View Your Results">
+    <title>{% block title %}Student Result System{% endblock %}</title>
+    
+    <!-- CSS Resources -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}" media="print">
+    
+    <!-- Extra CSS for specific pages -->
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}" sizes="32x32">
+</head>
+<body class="app-body">
+    <main class="app-content" id="main-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages" role="alert" aria-live="polite">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-message--{{ category }}" role="alert">
+                            <div class="flash-message__icon" aria-hidden="true">
+                                {% if category == 'error' %}⚠️{% elif category == 'success' %}✅{% elif category == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+                            </div>
+                            <div class="flash-message__content">{{ message }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Extra JavaScript for specific pages -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Add Subject - Student Result System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/students.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="professional-form-page">
+    <!-- Page Header -->
+    <header class="professional-form-header">
+        <a href="{{ url_for('subjects.list_subjects') }}" class="professional-form-back">
+            <span aria-hidden="true">←</span>
+            <span>Back to Subjects</span>
+        </a>
+        
+        <h1 class="professional-form-title">Add Subject</h1>
+        <p class="professional-form-subtitle">Create a new subject and define its academic details.</p>
+    </header>
+    
+    <!-- Form Card -->
+    <div class="professional-form-card">
+        <div class="professional-form-card__header">
+            <h2 class="professional-form-card__title">Subject Information</h2>
+            <p class="professional-form-card__description">Enter the required details below.</p>
+        </div>
+        
+        <form method="POST" class="professional-form" novalidate>
+            <!-- Subject Code -->
+            <div class="professional-form__group">
+                <label for="subject_code" class="professional-form__label">
+                    Subject Code <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="subject_code" 
+                    name="subject_code" 
+                    class="professional-form__input {% if errors and errors.subject_code %}professional-form__input--error{% endif %}"
+                    value="{{ (form_data.subject_code if form_data else '') | upper if form_data else '' }}"
+                    placeholder="e.g., MATH01" 
+                    required
+                >
+                {% if errors and errors.subject_code %}
+                    <p class="professional-form__error" role="alert">{{ errors.subject_code }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Subject Name -->
+            <div class="professional-form__group">
+                <label for="subject_name" class="professional-form__label">
+                    Subject Name <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="subject_name" 
+                    name="subject_name" 
+                    class="professional-form__input {% if errors and errors.subject_name %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.subject_name if form_data else '' }}"
+                    placeholder="e.g., Mathematics" 
+                    required
+                >
+                {% if errors and errors.subject_name %}
+                    <p class="professional-form__error" role="alert">{{ errors.subject_name }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Max Marks -->
+            <div class="professional-form__group">
+                <label for="max_marks" class="professional-form__label">
+                    Maximum Marks <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="number" 
+                    id="max_marks" 
+                    name="max_marks" 
+                    class="professional-form__input {% if errors and errors.max_marks %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.max_marks if form_data else '' }}"
+                    min="1" 
+                    max="1000" 
+                    placeholder="e.g., 100" 
+                    required
+                >
+                {% if errors and errors.max_marks %}
+                    <p class="professional-form__error" role="alert">{{ errors.max_marks }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Passing Marks -->
+            <div class="professional-form__group">
+                <label for="passing_marks" class="professional-form__label">
+                    Passing Marks <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="number" 
+                    id="passing_marks" 
+                    name="passing_marks" 
+                    class="professional-form__input {% if errors and errors.passing_marks %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.passing_marks if form_data else 40 }}"
+                    min="1" 
+                    max="{{ form_data.max_marks if form_data else 100 }}"
+                    placeholder="e.g., 40" 
+                    required
+                >
+                {% if errors and errors.passing_marks %}
+                    <p class="professional-form__error" role="alert">{{ errors.passing_marks }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="professional-form__actions">
+                <a href="{{ url_for('subjects.list_subjects') }}" class="professional-form-btn professional-form-btn--cancel">
+                    Cancel
+                </a>
+                <button type="submit" class="professional-form-btn professional-form-btn--primary">
+                    Add Subject
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

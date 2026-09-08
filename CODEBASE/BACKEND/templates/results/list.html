@@ -1,0 +1,128 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Results - Student Result System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Student Results</h1>
+        <p class="admin-page-header__subtitle">View comprehensive student performance results</p>
+    </div>
+</header>
+
+<!-- Search -->
+<div class="admin-search">
+    <form class="admin-search__form">
+        <input type="text" 
+               name="search"
+               class="admin-search__input" 
+               placeholder="Search by student name or roll number...">
+        <button type="submit" class="admin-search__btn">
+            <span aria-hidden="true">🔍</span>
+        </button>
+    </form>
+</div>
+
+<!-- Results Table -->
+<div class="admin-table-container">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Roll Number</th>
+                <th style="text-align: right;">Subjects</th>
+                <th style="text-align: right;">Total Marks</th>
+                <th style="text-align: right;">Percentage</th>
+                <th style="text-align: center;">Grade</th>
+                <th style="text-align: center;">Status</th>
+                <th style="text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>
+                    <strong>{{ result.student.name }}</strong>
+                </td>
+                <td>
+                    <span class="admin-badge admin-badge--secondary">{{ result.student.roll_number }}</span>
+                </td>
+                <td style="text-align: right;">{{ result.subject_count }}</td>
+                <td style="text-align: right;">
+                    <strong>{{ result.total_obtained }}/{{ result.total_maximum }}</strong>
+                </td>
+                <td style="text-align: right;">
+                    <strong style="font-size: 1.0625rem;">{{ result.percentage }}%</strong>
+                </td>
+                <td style="text-align: center;">
+                    <span class="admin-badge admin-badge--primary" style="font-weight: 600;">
+                        {{ result.grade }}
+                    </span>
+                </td>
+                <td style="text-align: center;">
+                    <span class="admin-badge admin-badge--{{ 'success' if result.status == 'PASS' else 'danger' }}">
+                        {{ 'Pass' if result.status == 'PASS' else 'Fail' }}
+                    </span>
+                </td>
+                <td>
+                    <div class="admin-table__actions">
+                        <a href="{{ url_for('results.detail', student_id=result.student.id) }}" 
+                           class="admin-btn admin-btn--secondary admin-btn--small admin-btn--icon" 
+                           title="View Detailed Result">
+                            📊
+                        </a>
+                        <button type="button" 
+                                class="admin-btn admin-btn--secondary admin-btn--small admin-btn--icon" 
+                                title="Print Result" 
+                                onclick="window.location.href='{{ url_for('results.detail', student_id=result.student.id) }}'; setTimeout(function(){ window.print(); }, 500);">
+                            🖨️
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">
+                    <div class="admin-empty-state">
+                        <div class="admin-empty-state__icon">📊</div>
+                        <p class="admin-empty-state__text">No results available yet. Results will appear here once marks are assigned to students.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if pagination and results %}
+<div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+    <span style="color: var(--admin-text-secondary); font-size: 0.875rem;">
+        Showing {{ (pagination.current - 1) * pagination.per_page + 1 }} to 
+        {{ [pagination.current * pagination.per_page, pagination.total] | min }} of {{ pagination.total }} results
+    </span>
+    <div style="display: flex; gap: 0.5rem;">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('results.list_results', page=pagination.prev_num) }}" 
+           class="admin-btn admin-btn--secondary admin-btn--small" 
+           aria-label="Previous Page">
+            ←
+        </a>
+        {% endif %}
+
+        <span class="admin-btn admin-btn--secondary admin-btn--small" style="cursor: default;">
+            Page {{ pagination.current }} of {{ pagination.pages }}
+        </span>
+
+        {% if pagination.has_next %}
+        <a href="{{ url_for('results.list_results', page=pagination.next_num) }}" 
+           class="admin-btn admin-btn--secondary admin-btn--small" 
+           aria-label="Next Page">
+            →
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

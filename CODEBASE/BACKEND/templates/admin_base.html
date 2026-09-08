@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Result Analysis System - Academic Performance Management">
+    <title>{% block title %}Student Result Analysis System{% endblock %}</title>
+    
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    
+    <!-- Print CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}" media="print">
+    
+    <!-- Page-specific CSS -->
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}" sizes="32x32">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Unified Admin Sidebar Navigation -->
+        {% include 'partials/admin_navigation.html' %}
+        
+        <!-- Main Content -->
+        <div class="admin-main">
+            <main class="admin-content">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="admin-flash-messages" style="margin-bottom: 1.5rem;">
+                            {% for category, message in messages %}
+                                <div class="admin-card" style="padding: 1rem 1.5rem; margin-bottom: 1rem; border-left: 4px solid {% if category == 'error' %}var(--admin-danger){% elif category == 'success' %}var(--admin-success){% elif category == 'warning' %}var(--admin-warning){% else %}var(--admin-primary-accent){% endif %};">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Page Content -->
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Page-specific JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

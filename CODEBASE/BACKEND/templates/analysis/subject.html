@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}Subject Analysis - {{ subject.subject_name }} - Student Result System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
+<style>
+.analysis-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.analysis-card {
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-xl);
+}
+
+.analysis-card__title {
+    margin: 0 0 var(--space-md) 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.analysis-card__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.analysis-card__stat {
+    text-align: center;
+}
+
+.analysis-card__stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.analysis-card__stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.analysis-card__stat--high .analysis-card__stat-value {
+    color: var(--color-success);
+}
+
+.analysis-card__stat--low .analysis-card__stat-value {
+    color: var(--color-danger);
+}
+
+.analysis-card__stat--average .analysis-card__stat-value {
+    color: var(--color-info);
+}
+
+.analysis-card__distribution {
+    margin-top: var(--space-md);
+}
+
+.analysis-card__distribution-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--space-xs);
+}
+
+.analysis-card__distribution-bar-label {
+    width: 60px;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.analysis-card__distribution-bar-track {
+    flex: 1;
+    height: 20px;
+    background: var(--color-bg-light);
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+}
+
+.analysis-card__distribution-bar-fill {
+    height: 100%;
+    border-radius: var(--border-radius-sm);
+    transition: width 0.3s ease;
+}
+
+.analysis-card__distribution-bar-fill--A {
+    background: linear-gradient(90deg, #16a34a, #15803d);
+}
+
+.analysis-card__distribution-bar-fill--B {
+    background: linear-gradient(90deg, #84cc16, #65a30d);
+}
+
+.analysis-card__distribution-bar-fill--C {
+    background: linear-gradient(90deg, #eab308, #ca8a04);
+}
+
+.analysis-card__distribution-bar-fill--D {
+    background: linear-gradient(90deg, #ea580c, #c2410c);
+}
+
+.analysis-card__distribution-bar-fill--F {
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
+}
+
+.chart-wrapper {
+    height: 300px;
+    width: 100%;
+}
+
+.chart-wrapper canvas {
+    height: 100% !important;
+    width: 100% !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analysis-page page-content">
+    <header class="page-header">
+        <h1>Subject Analysis: {{ subject.subject_name }}</h1>
+        <a href="{{ url_for('analysis.index') }}" class="btn btn--secondary">
+            <span aria-hidden="true">⬅️</span>
+            <span>Back to Analysis</span>
+        </a>
+    </header>
+
+    <div class="analysis-container">
+        <!-- Statistics Card -->
+        <div class="analysis-card">
+            <h2 class="analysis-card__title">Performance Statistics</h2>
+            <div class="analysis-card__stats">
+                <div class="analysis-card__stat analysis-card__stat--high">
+                    <span class="analysis-card__stat-value">{{ stats.highest_score }}</span>
+                    <span class="analysis-card__stat-label">Highest</span>
+                </div>
+                <div class="analysis-card__stat analysis-card__stat--low">
+                    <span class="analysis-card__stat-value">{{ stats.lowest_score }}</span>
+                    <span class="analysis-card__stat-label">Lowest</span>
+                </div>
+                <div class="analysis-card__stat analysis-card__stat--average">
+                    <span class="analysis-card__stat-value">{{ stats.average_score | round(2) }}</span>
+                    <span class="analysis-card__stat-label">Average</span>
+                </div>
+                <div class="analysis-card__stat">
+                    <span class="analysis-card__stat-value">{{ stats.total_students }}</span>
+                    <span class="analysis-card__stat-label">Total</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pass/Fail Summary -->
+        <div class="analysis-card">
+            <h2 class="analysis-card__title">Pass/Fail Summary</h2>
+            <div class="analysis-card__stats">
+                <div class="analysis-card__stat analysis-card__stat--high">
+                    <span class="analysis-card__stat-value">{{ stats.pass_count }}</span>
+                    <span class="analysis-card__stat-label">Passed</span>
+                    <span class="analysis-card__stat-value" style="font-size: 1rem; margin-top: var(--space-xs);">
+                        ({{ stats.pass_percentage }}%)
+                    </span>
+                </div>
+                <div class="analysis-card__stat analysis-card__stat--low">
+                    <span class="analysis-card__stat-value">{{ stats.fail_count }}</span>
+                    <span class="analysis-card__stat-label">Failed</span>
+                    <span class="analysis-card__stat-value" style="font-size: 1rem; margin-top: var(--space-xs);">
+                        ({{ stats.fail_percentage }}%)
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Distribution Card -->
+    <div class="analysis-card" style="margin-bottom: var(--space-xl);">
+        <h2 class="analysis-card__title">Grade Distribution</h2>
+        <!-- Grade Distribution Bar Chart -->
+        <div class="chart-wrapper">
+            <canvas id="gradeDistributionChart"></canvas>
+        </div>
+        <!-- Grade Distribution Bars (fallback) -->
+        <div class="analysis-card__distribution" style="margin-top: var(--space-lg);">
+            {% for grade in ['A', 'B', 'C', 'D', 'F'] %}
+            {% set count = stats.grade_distribution[grade] %}
+            {% set percentage = (count / stats.total_students * 100) if stats.total_students > 0 else 0 %}
+            <div class="analysis-card__distribution-bar">
+                <span class="analysis-card__distribution-bar-label">{{ grade }}</span>
+                <div class="analysis-card__distribution-bar-track">
+                    <div class="analysis-card__distribution-bar-fill analysis-card__distribution-bar-fill--{{ grade }}"
+                         style="width: {{ percentage }}%">
+                    </div>
+                </div>
+                <span class="analysis-card__distribution-bar-label">
+                    {{ count }} ({{ percentage | round(1) }}%)
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Students List -->
+    <div class="table-container">
+        <table class="data-table">
+            <thead class="data-table__header">
+                <tr>
+                    <th>Student</th>
+                    <th>Roll Number</th>
+                    <th>Marks</th>
+                    <th>Percentage</th>
+                    <th>Grade</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr class="data-table__row">
+                    <td class="data-table__cell data-table__cell--name">
+                        <span class="badge badge--secondary">{{ result.student_name }}</span>
+                    </td>
+                    <td class="data-table__cell">{{ result.roll_number }}</td>
+                    <td class="data-table__cell data-table__cell--numeric">{{ result.marks_obtained }}</td>
+                    <td class="data-table__cell data-table__cell--numeric">
+                        {{ result.percentage }}%
+                    </td>
+                    <td class="data-table__cell">
+                        <span class="badge badge--grade-{% if result.percentage >= 90 %}A{% elif result.percentage >= 75 %}B{% elif result.percentage >= 60 %}C{% elif result.percentage >= 40 %}D{% else %}F{% endif %}">
+                            {{ result.grade }}
+                        </span>
+                    </td>
+                    <td class="data-table__cell">
+                        <span class="badge badge--{{ 'success' if result.status == 'PASS' else 'danger' }}">
+                            {{ result.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td class="data-table__cell" colspan="6">
+                        <div class="empty-state">
+                            <p>No student data available for this subject</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initGradeDistributionChart();
+});
+
+function initGradeDistributionChart() {
+    const gradeCtx = document.getElementById('gradeDistributionChart');
+    if (!gradeCtx) return;
+    
+    const gradeDistribution = {
+        labels: ['A', 'B', 'C', 'D', 'F'],
+        data: [
+            {{ stats.grade_distribution.A }},
+            {{ stats.grade_distribution.B }},
+            {{ stats.grade_distribution.C }},
+            {{ stats.grade_distribution.D }},
+            {{ stats.grade_distribution.F }}
+        ],
+        colors: [
+            '#16a34a',
+            '#84cc16',
+            '#eab308',
+            '#ea580c',
+            '#dc2626'
+        ]
+    };
+    
+    new Chart(gradeCtx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: gradeDistribution.labels,
+            datasets: [{
+                label: 'Number of Students',
+                data: gradeDistribution.data,
+                backgroundColor: gradeDistribution.colors,
+                borderColor: '#ffffff',
+                borderWidth: 1,
+                barPercentage: 0.6,
+                categoryPercentage: 0.8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0,
+                        font: {
+                            size: 11
+                        },
+                        color: '#6b7280'
+                    },
+                    grid: {
+                        color: '#e5e7eb',
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 11
+                        },
+                        color: '#6b7280'
+                    },
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    padding: 10,
+                    displayColors: false
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

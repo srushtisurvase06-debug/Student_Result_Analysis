@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Student Result - {{ result.student.name }} - Student Result System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <div>
+            <h1>Student Result</h1>
+            <p class="page-header__description">Detailed performance report</p>
+        </div>
+        <div style="display: flex; gap: var(--space-sm);">
+            <button onclick="window.print()" class="btn btn--secondary btn--icon">
+                <span aria-hidden="true">🖨️</span>
+                <span>Print</span>
+            </button>
+            <a href="{{ url_for('results.list_results') }}" class="btn btn--outline btn--icon">
+                <span aria-hidden="true">⬅️</span>
+                <span>Back to Results List</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Student Info Card -->
+    <div class="page-content" style="margin-bottom: var(--space-lg);">
+        <div style="padding: var(--space-xl);">
+            <h2 style="margin-top: 0; margin-bottom: var(--space-lg); font-size: 1.25rem; border-bottom: 2px solid var(--color-border); padding-bottom: var(--space-sm);">Student Information</h2>
+            <div class="student-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Name</span>
+                    <span class="info-value">{{ result.student.name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Roll Number</span>
+                    <span class="info-value">{{ result.student.roll_number }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Gender</span>
+                    <span class="info-value">{{ result.student.gender or '-' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ result.student.email or '-' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Summary -->
+    <div class="page-content" style="margin-bottom: var(--space-lg);">
+        <div style="padding: var(--space-xl);">
+            <h2 style="margin-top: 0; margin-bottom: var(--space-lg); font-size: 1.25rem; border-bottom: 2px solid var(--color-border); padding-bottom: var(--space-sm);">Result Summary</h2>
+            <div class="result-summary">
+                <div class="summary-card">
+                    <span class="summary-label">Total Marks</span>
+                    <div class="summary-value--large">{{ result.total_obtained }}/{{ result.total_maximum }}</div>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Percentage</span>
+                    <div class="summary-value--large">{{ result.percentage }}%</div>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Grade</span>
+                    <div class="summary-value--large summary-value--{{ result.grade | lower }}">{{ result.grade }}</div>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Status</span>
+                    <div class="summary-value--large" style="color: {% if result.status == 'PASS' %}var(--color-success){% else %}var(--color-danger){% endif %};">{{ result.status }}</div>
+                </div>
+            </div>
+            {% if result.status == 'FAIL' %}
+            <div class="alert alert--error" style="margin-top: var(--space-lg);">
+                <p class="alert__message"><strong>Reason:</strong> {{ result.status_reason }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Subject-wise Marks -->
+    <div class="page-content">
+        <div style="padding: var(--space-xl) var(--space-xl) 0;">
+            <h2 style="margin-top: 0; margin-bottom: var(--space-lg); font-size: 1.25rem; border-bottom: 2px solid var(--color-border); padding-bottom: var(--space-sm);">Subject-wise Marks</h2>
+        </div>
+        <div class="table-container" style="border: none; box-shadow: none;">
+            <table class="data-table">
+                <thead class="data-table__header">
+                    <tr>
+                        <th>Subject Code</th>
+                        <th>Subject Name</th>
+                        <th style="text-align: right;">Marks Obtained</th>
+                        <th style="text-align: right;">Maximum</th>
+                        <th style="text-align: right;">Passing</th>
+                        <th style="text-align: center;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mark in result.subject_results %}
+                    <tr class="data-table__row">
+                        <td class="data-table__cell">
+                            <code style="font-family: var(--font-mono); font-weight: 600; color: var(--color-primary);">{{ mark.subject_code }}</code>
+                        </td>
+                        <td class="data-table__cell data-table__cell--name">{{ mark.subject_name }}</td>
+                        <td class="data-table__cell data-table__cell--numeric">
+                            <strong>{{ mark.marks_obtained }}</strong>
+                        </td>
+                        <td class="data-table__cell data-table__cell--numeric">{{ mark.max_marks }}</td>
+                        <td class="data-table__cell data-table__cell--numeric">{{ mark.passing_marks | round(0) | int }}</td>
+                        <td class="data-table__cell" style="text-align: center;">
+                            <span class="badge badge--{{ 'success' if mark.subject_status == 'PASS' else 'danger' }}">
+                                {{ mark.subject_status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td class="data-table__cell" colspan="6">
+                            <div class="empty-state">
+                                <p>No marks assigned yet</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

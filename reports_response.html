@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="js-focus-visible">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Result Analysis System - Academic Performance Management">
+    <title>Reports - Student Result System</title>
+    
+    <!-- CSS Resources -->
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/print.css" media="print">
+    
+    <!-- Extra CSS for specific pages -->
+    
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/static/images/favicon.png" sizes="32x32">
+</head>
+<body class="app-body">
+    
+        
+<nav class="navbar">
+    <div class="navbar__brand">
+        <a href="/dashboard/" class="navbar__brand-link">
+            <span class="navbar__brand-icon" aria-hidden="true">📊</span>
+            <span class="navbar__brand-text">Student Result System</span>
+        </a>
+    </div>
+
+    <ul class="navbar__menu">
+        <li class="navbar__item">
+            <a href="/dashboard/" class="navbar__link">
+                <span class="navbar__link-icon" aria-hidden="true">🏠</span>
+                <span class="navbar__link-text">Dashboard</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="/students/" class="navbar__link">
+                <span class="navbar__link-icon" aria-hidden="true">👥</span>
+                <span class="navbar__link-text">Students</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="/subjects/" class="navbar__link">
+                <span class="navbar__link-icon" aria-hidden="true">📚</span>
+                <span class="navbar__link-text">Subjects</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="/marks/" class="navbar__link">
+                <span class="navbar__link-icon" aria-hidden="true">📝</span>
+                <span class="navbar__link-text">Marks</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="/results/" class="navbar__link">
+                <span class="navbar__link-icon" aria-hidden="true">📊</span>
+                <span class="navbar__link-text">Results</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="/analysis/" class="navbar__link">
+                <span class="navbar__link-icon" aria-hidden="true">📈</span>
+                <span class="navbar__link-text">Analysis</span>
+            </a>
+        </li>
+        <li class="navbar__item">
+            <a href="/reports/" class="navbar__link">
+                <span class="navbar__link-icon" aria-hidden="true">📄</span>
+                <span class="navbar__link-text">Reports</span>
+            </a>
+        </li>
+    </ul>
+
+    <ul class="navbar__menu navbar__menu--right">
+        <li class="navbar__item">
+            <span class="navbar__user" aria-hidden="true">
+                <span class="navbar__user-icon" aria-hidden="true">👤</span>
+                <span class="navbar__user-text" title="admin">admin</span>
+            </span>
+        </li>
+        <li class="navbar__item">
+            <form method="post" action="/logout" class="navbar__form">
+                <button type="submit" class="navbar__link navbar__link--logout">
+                    <span class="navbar__link-icon" aria-hidden="true">👋</span>
+                    <span class="navbar__link-text">Logout</span>
+                </button>
+            </form>
+        </li>
+    </ul>
+</nav>
+    
+
+    <main class="app-content" id="main-content">
+        <!-- Flash Messages -->
+        
+            
+        
+
+        
+<div class="reports-page page-content">
+    <header class="page-header">
+        <h1>Reports</h1>
+    </header>
+
+    <!-- Report Categories -->
+    <div class="report-grid">
+        <!-- Academic Reports -->
+        <div class="card card--category">
+            <h2 class="card__title">Academic Reports</h2>
+            <div class="card__content">
+                <a href="/reports/class-rank" class="btn btn--outline btn--block">
+                    🏆 Class Rank Report
+                </a>
+                <a href="/reports/subject?subject_id=1" class="btn btn--outline btn--block">
+                    📊 Subject Performance Report
+                </a>
+            </div>
+        </div>
+
+        <!-- Grade Reports -->
+        <div class="card card--category">
+            <h2 class="card__title">Grade Reports</h2>
+            <div class="card__content">
+                <a href="/reports/grade-distribution" class="btn btn--outline btn--block">
+                    📋 Grade Distribution
+                </a>
+                <a href="/reports/class" class="btn btn--outline btn--block">
+                    📈 Performance Trends
+                </a>
+            </div>
+        </div>
+
+        <!-- Export Reports -->
+        <div class="card card--category">
+            <h2 class="card__title">Export Reports</h2>
+            <div class="card__content">
+                <a href="/reports/individual" class="btn btn--outline btn--block">
+                    📥 Individual Student Report
+                </a>
+                <a href="/reports/class" class="btn btn--outline btn--block">
+                    📊 Class Performance Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="card">
+        <h2 class="card__title">Quick Statistics</h2>
+        <div class="card__content">
+            <div class="stats">
+                <div class="stat-card stat-card--block">
+                    <p class="stat-card__label">Total Students</p>
+                    <p class="stat-card__value stat-card__value--primary">15</p>
+                </div>
+                <div class="stat-card stat-card--block">
+                    <p class="stat-card__label">Passed</p>
+                    <p class="stat-card__value stat-card__value--success">14</p>
+                </div>
+                <div class="stat-card stat-card--block">
+                    <p class="stat-card__label">Failed</p>
+                    <p class="stat-card__value stat-card__value--danger">1</p>
+                </div>
+                <div class="stat-card stat-card--block">
+                    <p class="stat-card__label">Class Average</p>
+                    <p class="stat-card__value stat-card__value--warning">71.8%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script src="/static/js/main.js"></script>
+    
+    <!-- Extra JavaScript for specific pages -->
+    
+</body>
+</html>

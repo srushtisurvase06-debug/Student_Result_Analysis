@@ -1,0 +1,87 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Subjects - Student Result System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Subjects</h1>
+        <p class="admin-page-header__subtitle">Manage subjects and academic details</p>
+    </div>
+    <div class="admin-page-header__actions">
+        <a href="{{ url_for('subjects.add_subject') }}" class="admin-btn admin-btn--primary">
+            <span aria-hidden="true">➕</span>
+            <span>Add Subject</span>
+        </a>
+    </div>
+</header>
+
+<!-- Search -->
+<div class="admin-search">
+    <form class="admin-search__form">
+        <input type="text" 
+               name="search"
+               class="admin-search__input" 
+               value="{{ search if search else '' }}"
+               placeholder="Search by subject name or code...">
+        <button type="submit" class="admin-search__btn">
+            <span aria-hidden="true">🔍</span>
+        </button>
+    </form>
+</div>
+
+<!-- Subjects Table -->
+<div class="admin-table-container">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Subject Code</th>
+                <th>Subject Name</th>
+                <th>Max Marks</th>
+                <th>Passing Marks</th>
+                <th style="text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subject in subjects %}
+            <tr>
+                <td>
+                    <span class="admin-badge admin-badge--code">{{ subject.subject_code }}</span>
+                </td>
+                <td>
+                    <strong>{{ subject.subject_name }}</strong>
+                </td>
+                <td>{{ subject.max_marks }}</td>
+                <td>{{ subject.passing_marks if subject.passing_marks else '40' }}</td>
+                <td>
+                    <div class="admin-table__actions">
+                        <a href="{{ url_for('subjects.edit_subject', subject_id=subject.id) }}" 
+                           class="admin-btn admin-btn--secondary admin-btn--small admin-btn--icon" 
+                           title="Edit">
+                            ✏️
+                        </a>
+                        <button type="button" 
+                                class="admin-btn admin-btn--danger admin-btn--small admin-btn--icon" 
+                                title="Delete"
+                                data-delete-url="{{ url_for('subjects.delete_subject', subject_id=subject.id) }}"
+                                data-delete-name="{{ subject.subject_name }}">
+                            🗑️
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">
+                    <div class="admin-empty-state">
+                        <div class="admin-empty-state__icon">📚</div>
+                        <p class="admin-empty-state__text">No subjects found. <a href="{{ url_for('subjects.add_subject') }}">Add one</a>?</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

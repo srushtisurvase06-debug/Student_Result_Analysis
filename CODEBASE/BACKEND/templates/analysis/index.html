@@ -1,0 +1,489 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Analysis - Student Result System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
+<style>
+/* Analysis-specific styles */
+.analysis-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.analysis-stat-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 1.25rem;
+    box-shadow: var(--admin-shadow-sm);
+}
+
+.analysis-stat-card__label {
+    font-size: 0.8125rem;
+    color: var(--admin-text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.analysis-stat-card__value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--admin-text-primary);
+    line-height: 1;
+}
+
+.analysis-stat-card--primary .analysis-stat-card__value {
+    color: var(--admin-primary-accent);
+}
+
+.analysis-stat-card--success .analysis-stat-card__value {
+    color: var(--admin-success);
+}
+
+.analysis-stat-card--danger .analysis-stat-card__value {
+    color: var(--admin-danger);
+}
+
+.analysis-section {
+    margin-bottom: 2.5rem;
+}
+
+.analysis-section__header {
+    margin-bottom: 1.5rem;
+}
+
+.analysis-section__title {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+}
+
+.analysis-section__subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--admin-text-secondary);
+}
+
+.subject-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.25rem;
+}
+
+.subject-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--admin-shadow-sm);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.subject-card:hover {
+    box-shadow: var(--admin-shadow-md);
+    border-color: var(--admin-primary-accent);
+    transform: translateY(-2px);
+}
+
+.subject-card__header {
+    margin-bottom: 1rem;
+}
+
+.subject-card__title {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+}
+
+.subject-card__code {
+    font-size: 0.8125rem;
+    color: var(--admin-text-secondary);
+    font-family: var(--admin-font-mono);
+    font-weight: 500;
+}
+
+.subject-card__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.subject-stat {
+    text-align: center;
+}
+
+.subject-stat__value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--admin-text-primary);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.subject-stat__value--success {
+    color: var(--admin-success);
+}
+
+.subject-stat__label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--admin-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.subject-card__progress {
+    margin-bottom: 1rem;
+}
+
+.subject-progress-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.subject-progress-bar__fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--admin-primary-accent), var(--admin-primary-accent-light));
+    transition: width 0.3s ease;
+}
+
+.subject-card__footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--admin-border-light);
+}
+
+.subject-card__link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--admin-primary-accent);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: gap 0.2s ease;
+}
+
+.subject-card:hover .subject-card__link {
+    gap: 0.75rem;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.chart-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--admin-shadow-sm);
+}
+
+.chart-card__title {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+.chart-wrapper canvas {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+@media (max-width: 767px) {
+    .subject-cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .analysis-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="admin-page-header">
+    <div class="admin-page-header__info">
+        <h1>Analysis</h1>
+        <p class="admin-page-header__subtitle">Academic performance insights and subject-wise statistics</p>
+    </div>
+</header>
+
+<!-- Top Summary Statistics -->
+{% if subjects %}
+{% set total_students_across_subjects = subjects | sum(attribute='total_students') %}
+{% set subjects_with_data = subjects | selectattr('total_students', 'gt', 0) | list %}
+{% set overall_pass_rate = (subjects_with_data | sum(attribute='pass_percentage') / (subjects_with_data | length)) if subjects_with_data | length > 0 else 0 %}
+{% set overall_avg = (subjects_with_data | sum(attribute='average_score') / (subjects_with_data | length)) if subjects_with_data | length > 0 else 0 %}
+{% set best_subject = subjects | sort(attribute='pass_percentage', reverse=True) | first if subjects else None %}
+{% set weakest_subject = subjects | sort(attribute='pass_percentage') | first if subjects else None %}
+
+<div class="analysis-stats-grid">
+    <div class="analysis-stat-card analysis-stat-card--primary">
+        <div class="analysis-stat-card__label">Total Students</div>
+        <div class="analysis-stat-card__value">{{ total_students_across_subjects }}</div>
+    </div>
+    
+    <div class="analysis-stat-card analysis-stat-card--success">
+        <div class="analysis-stat-card__label">Overall Pass Rate</div>
+        <div class="analysis-stat-card__value">{{ "%.1f"|format(overall_pass_rate) }}%</div>
+    </div>
+    
+    <div class="analysis-stat-card">
+        <div class="analysis-stat-card__label">Overall Average</div>
+        <div class="analysis-stat-card__value">{{ "%.1f"|format(overall_avg) }}</div>
+    </div>
+    
+    {% if best_subject and best_subject.total_students > 0 %}
+    <div class="analysis-stat-card">
+        <div class="analysis-stat-card__label">Highest Performing</div>
+        <div class="analysis-stat-card__value" style="font-size: 1.25rem;">{{ best_subject.subject_code }}</div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Subject Performance Section -->
+<div class="analysis-section">
+    <div class="analysis-section__header">
+        <h2 class="analysis-section__title">Subject Performance</h2>
+        <p class="analysis-section__subtitle">Compare pass rate and average performance across subjects</p>
+    </div>
+    
+    {% if subjects %}
+    <div class="subject-cards-grid">
+        {% for subject in subjects %}
+        <div class="subject-card" onclick="window.location.href='{{ url_for('analysis.subject', subject_id=subject.id) }}'">
+            <div class="subject-card__header">
+                <h3 class="subject-card__title">{{ subject.subject_name }}</h3>
+                <div class="subject-card__code">{{ subject.subject_code }}</div>
+            </div>
+            
+            <div class="subject-card__stats">
+                <div class="subject-stat">
+                    <span class="subject-stat__value">{{ subject.total_students }}</span>
+                    <span class="subject-stat__label">Students</span>
+                </div>
+                <div class="subject-stat">
+                    <span class="subject-stat__value subject-stat__value--success">{{ "%.1f"|format(subject.pass_percentage) }}%</span>
+                    <span class="subject-stat__label">Pass Rate</span>
+                </div>
+                <div class="subject-stat">
+                    <span class="subject-stat__value">{{ "%.1f"|format(subject.average_score) }}</span>
+                    <span class="subject-stat__label">Average</span>
+                </div>
+            </div>
+            
+            <div class="subject-card__progress">
+                <div class="subject-progress-bar">
+                    <div class="subject-progress-bar__fill" style="width: {{ subject.pass_percentage }}%"></div>
+                </div>
+            </div>
+            
+            <div class="subject-card__footer">
+                <span class="subject-card__link">
+                    View Details
+                    <span aria-hidden="true">→</span>
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="admin-empty-state">
+        <div class="admin-empty-state__icon">📊</div>
+        <p class="admin-empty-state__text">No subject data available. Add subjects and assign marks to generate analysis.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Performance Overview Charts -->
+{% if subjects %}
+<div class="analysis-section">
+    <div class="analysis-section__header">
+        <h2 class="analysis-section__title">Performance Overview</h2>
+        <p class="analysis-section__subtitle">Visual representation of academic performance metrics</p>
+    </div>
+    
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3 class="chart-card__title">Grade Distribution</h3>
+            <div class="chart-wrapper">
+                <canvas id="gradeDistributionChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="chart-card">
+            <h3 class="chart-card__title">Pass vs Fail Ratio</h3>
+            <div class="chart-wrapper">
+                <canvas id="passFailChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initAnalysisCharts();
+});
+
+function initAnalysisCharts() {
+    // Grade Distribution Chart
+    const gradeCtx = document.getElementById('gradeDistributionChart');
+    if (gradeCtx) {
+        const gradeData = {
+            A: {{ grade_distribution.A if grade_distribution else 0 }},
+            B: {{ grade_distribution.B if grade_distribution else 0 }},
+            C: {{ grade_distribution.C if grade_distribution else 0 }},
+            D: {{ grade_distribution.D if grade_distribution else 0 }},
+            F: {{ grade_distribution.F if grade_distribution else 0 }}
+        };
+
+        new Chart(gradeCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['A', 'B', 'C', 'D', 'F'],
+                datasets: [{
+                    label: 'Number of Students',
+                    data: [gradeData.A, gradeData.B, gradeData.C, gradeData.D, gradeData.F],
+                    backgroundColor: '#3b82f6',
+                    borderColor: '#ffffff',
+                    borderWidth: 1,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0,
+                            font: { size: 11, family: 'Segoe UI' },
+                            color: '#64748b'
+                        },
+                        grid: {
+                            color: '#e5e7eb',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 12, family: 'Segoe UI' },
+                            color: '#64748b'
+                        },
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        padding: 10,
+                        displayColors: false,
+                        titleFont: { size: 13, family: 'Segoe UI' },
+                        bodyFont: { size: 12, family: 'Segoe UI' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Pass/Fail Doughnut Chart
+    const passFailCtx = document.getElementById('passFailChart');
+    if (passFailCtx) {
+        const passCount = {{ pass_count if pass_count else 0 }};
+        const failCount = {{ fail_count if fail_count else 0 }};
+        const total = passCount + failCount;
+
+        new Chart(passFailCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Pass', 'Fail'],
+                datasets: [{
+                    data: [passCount, failCount],
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            padding: 16,
+                            font: { size: 12, family: 'Segoe UI' },
+                            color: '#64748b'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        padding: 12,
+                        displayColors: false,
+                        titleFont: { size: 13, family: 'Segoe UI' },
+                        bodyFont: { size: 12, family: 'Segoe UI' },
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return context.label + ': ' + value + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

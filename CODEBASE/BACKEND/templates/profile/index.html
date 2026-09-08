@@ -1,0 +1,172 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Admin Profile - Student Result System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/students.css') }}">
+<style>
+    /* Profile-specific: make all form fields full width (vertical layout) */
+    .profile-form-group {
+        grid-column: 1 / -1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="professional-form-page">
+    <!-- Page Header -->
+    <header class="professional-form-header">
+        <h1 class="professional-form-title">Admin Profile</h1>
+        <p class="professional-form-subtitle">Manage your account information and security settings.</p>
+    </header>
+    
+    <!-- Profile Information Card -->
+    <div class="professional-form-card">
+        <div class="professional-form-card__header">
+            <h2 class="professional-form-card__title">👤 Profile Information</h2>
+            <p class="professional-form-card__description">Update your personal information and contact details.</p>
+        </div>
+        
+        <form method="POST" class="professional-form" novalidate>
+            <input type="hidden" name="action" value="update_profile">
+            
+            <!-- Admin Name -->
+            <div class="professional-form__group profile-form-group">
+                <label for="full_name" class="professional-form__label">
+                    Admin Name <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="full_name" 
+                    name="full_name" 
+                    class="professional-form__input {% if errors and errors.full_name %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.full_name if form_data else admin.full_name }}"
+                    placeholder="Enter your full name"
+                    required
+                >
+                {% if errors and errors.full_name %}
+                    <span class="professional-form__error" role="alert">{{ errors.full_name }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- Username -->
+            <div class="professional-form__group profile-form-group">
+                <label for="username" class="professional-form__label">
+                    Username <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    class="professional-form__input {% if errors and errors.username %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.username if form_data else admin.username }}"
+                    placeholder="Enter username"
+                    required
+                >
+                {% if errors and errors.username %}
+                    <span class="professional-form__error" role="alert">{{ errors.username }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- Email -->
+            <div class="professional-form__group profile-form-group">
+                <label for="email" class="professional-form__label">
+                    Email <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="professional-form__input {% if errors and errors.email %}professional-form__input--error{% endif %}"
+                    value="{{ form_data.email if form_data else admin.email }}"
+                    placeholder="admin@example.com"
+                    required
+                >
+                {% if errors and errors.email %}
+                    <span class="professional-form__error" role="alert">{{ errors.email }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="professional-form__actions">
+                <button type="submit" class="professional-form-btn professional-form-btn--primary">
+                    Save Profile Changes
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Password Change Card -->
+    <div class="professional-form-card">
+        <div class="professional-form-card__header">
+            <h2 class="professional-form-card__title">🔒 Change Password</h2>
+            <p class="professional-form-card__description">Update your password to keep your account secure.</p>
+        </div>
+        
+        <form method="POST" class="professional-form" novalidate>
+            <input type="hidden" name="action" value="change_password">
+            
+            <!-- Current Password -->
+            <div class="professional-form__group profile-form-group">
+                <label for="current_password" class="professional-form__label">
+                    Current Password <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="current_password" 
+                    name="current_password" 
+                    class="professional-form__input {% if password_errors and password_errors.current_password %}professional-form__input--error{% endif %}"
+                    placeholder="Enter current password"
+                    required
+                >
+                {% if password_errors and password_errors.current_password %}
+                    <span class="professional-form__error" role="alert">{{ password_errors.current_password }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- New Password -->
+            <div class="professional-form__group profile-form-group">
+                <label for="new_password" class="professional-form__label">
+                    New Password <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="new_password" 
+                    name="new_password" 
+                    class="professional-form__input {% if password_errors and password_errors.new_password %}professional-form__input--error{% endif %}"
+                    placeholder="Enter new password (minimum 6 characters)"
+                    required
+                >
+                {% if password_errors and password_errors.new_password %}
+                    <span class="professional-form__error" role="alert">{{ password_errors.new_password }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- Confirm New Password -->
+            <div class="professional-form__group profile-form-group">
+                <label for="confirm_password" class="professional-form__label">
+                    Confirm New Password <span class="professional-form__required">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="confirm_password" 
+                    name="confirm_password" 
+                    class="professional-form__input {% if password_errors and password_errors.confirm_password %}professional-form__input--error{% endif %}"
+                    placeholder="Re-enter new password"
+                    required
+                >
+                {% if password_errors and password_errors.confirm_password %}
+                    <span class="professional-form__error" role="alert">{{ password_errors.confirm_password }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="professional-form__actions">
+                <button type="submit" class="professional-form-btn professional-form-btn--secondary">
+                    Update Password
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

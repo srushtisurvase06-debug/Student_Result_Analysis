@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Result Analysis System - Academic Performance Management">
+    <title>Admin Dashboard - Student Result System</title>
+    
+    <!-- CSS Resources -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}" sizes="32x32">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="dashboard-sidebar__header">
+                <a href="{{ url_for('dashboard.index') }}" class="dashboard-sidebar__brand">
+                    <span class="dashboard-sidebar__brand-icon">📊</span>
+                    <span class="dashboard-sidebar__brand-text">Student Result System</span>
+                </a>
+            </div>
+            
+            <nav class="dashboard-sidebar__nav">
+                <ul class="dashboard-sidebar__nav-list">
+                    <li class="dashboard-sidebar__nav-item">
+                        <a href="{{ url_for('dashboard.index') }}" class="dashboard-sidebar__nav-link dashboard-sidebar__nav-link--active">
+                            <span class="dashboard-sidebar__nav-icon">🏠</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="dashboard-sidebar__nav-item">
+                        <a href="{{ url_for('students.list_students') }}" class="dashboard-sidebar__nav-link">
+                            <span class="dashboard-sidebar__nav-icon">👥</span>
+                            <span>Students</span>
+                        </a>
+                    </li>
+                    <li class="dashboard-sidebar__nav-item">
+                        <a href="{{ url_for('subjects.list_subjects') }}" class="dashboard-sidebar__nav-link">
+                            <span class="dashboard-sidebar__nav-icon">📚</span>
+                            <span>Subjects</span>
+                        </a>
+                    </li>
+                    <li class="dashboard-sidebar__nav-item">
+                        <a href="{{ url_for('marks.list_marks') }}" class="dashboard-sidebar__nav-link">
+                            <span class="dashboard-sidebar__nav-icon">📝</span>
+                            <span>Marks</span>
+                        </a>
+                    </li>
+                    <li class="dashboard-sidebar__nav-item">
+                        <a href="{{ url_for('results.list_results') }}" class="dashboard-sidebar__nav-link">
+                            <span class="dashboard-sidebar__nav-icon">📊</span>
+                            <span>Results</span>
+                        </a>
+                    </li>
+                    <li class="dashboard-sidebar__nav-item">
+                        <a href="{{ url_for('analysis.index') }}" class="dashboard-sidebar__nav-link">
+                            <span class="dashboard-sidebar__nav-icon">📈</span>
+                            <span>Analysis</span>
+                        </a>
+                    </li>
+                    <li class="dashboard-sidebar__nav-item">
+                        <a href="{{ url_for('reports.index') }}" class="dashboard-sidebar__nav-link">
+                            <span class="dashboard-sidebar__nav-icon">📄</span>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="dashboard-sidebar__footer">
+                &copy; 2026 Student Result System<br>
+                v1.0.0
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="dashboard-main">
+            <!-- Top Header -->
+            <header class="dashboard-header">
+                <div class="dashboard-header__left">
+                    <button class="dashboard-header__toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                        ☰
+                    </button>
+                    <h1 class="dashboard-header__title">Dashboard</h1>
+                </div>
+                
+                <div class="dashboard-header__right">
+                    <div class="dashboard-header__user">
+                        <span class="dashboard-header__user-icon">👤</span>
+                        <span class="dashboard-header__user-name">admin</span>
+                    </div>
+                    <a href="{{ url_for('profile.index') }}" class="dashboard-header__profile" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; margin-right: 0.5rem; color: inherit; text-decoration: none; border-radius: 0.375rem; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                        <span>⚙️</span>
+                        <span>Profile</span>
+                    </a>
+                    <form method="post" action="{{ url_for('auth.logout') }}" style="margin: 0;">
+                        <button type="submit" class="dashboard-header__logout">
+                            <span>👋</span>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </div>
+            </header>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div style="padding: 1rem 2rem;">
+                        {% for category, message in messages %}
+                            <div style="padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 0.5rem; background-color: {% if category == 'error' %}#fee2e2{% elif category == 'success' %}#dcfce7{% else %}#dbeafe{% endif %}; color: {% if category == 'error' %}#991b1b{% elif category == 'success' %}#166534{% else %}#1e40af{% endif %};">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <div class="dashboard-content__header">
+                    <h2 class="dashboard-content__title">Admin Dashboard</h2>
+                    <p class="dashboard-content__subtitle">Welcome back, admin! Here's your institution overview.</p>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="dashboard-stats">
+                    <div class="dashboard-stat-card dashboard-stat-card--students">
+                        <div class="dashboard-stat-card__header">
+                            <p class="dashboard-stat-card__label">Total Students</p>
+                            <span class="dashboard-stat-card__icon">👥</span>
+                        </div>
+                        <p class="dashboard-stat-card__value">{{ stats.total_students }}</p>
+                    </div>
+                    
+                    <div class="dashboard-stat-card dashboard-stat-card--subjects">
+                        <div class="dashboard-stat-card__header">
+                            <p class="dashboard-stat-card__label">Total Subjects</p>
+                            <span class="dashboard-stat-card__icon">📚</span>
+                        </div>
+                        <p class="dashboard-stat-card__value">{{ stats.total_subjects }}</p>
+                    </div>
+                    
+                    <div class="dashboard-stat-card dashboard-stat-card--results">
+                        <div class="dashboard-stat-card__header">
+                            <p class="dashboard-stat-card__label">Results Generated</p>
+                            <span class="dashboard-stat-card__icon">📊</span>
+                        </div>
+                        <p class="dashboard-stat-card__value">{{ stats.students_with_results }}</p>
+                    </div>
+                    
+                    <div class="dashboard-stat-card dashboard-stat-card--pass">
+                        <div class="dashboard-stat-card__header">
+                            <p class="dashboard-stat-card__label">Pass Rate</p>
+                            <span class="dashboard-stat-card__icon">✅</span>
+                        </div>
+                        <p class="dashboard-stat-card__value">{{ "%.1f"|format(stats.pass_percentage) }}%</p>
+                    </div>
+                    
+                    <div class="dashboard-stat-card dashboard-stat-card--fail">
+                        <div class="dashboard-stat-card__header">
+                            <p class="dashboard-stat-card__label">Fail Rate</p>
+                            <span class="dashboard-stat-card__icon">❌</span>
+                        </div>
+                        <p class="dashboard-stat-card__value">{{ "%.1f"|format(stats.fail_percentage) }}%</p>
+                    </div>
+                    
+                    <div class="dashboard-stat-card dashboard-stat-card--average">
+                        <div class="dashboard-stat-card__header">
+                            <p class="dashboard-stat-card__label">Class Average</p>
+                            <span class="dashboard-stat-card__icon">📈</span>
+                        </div>
+                        <p class="dashboard-stat-card__value">{{ "%.1f"|format(stats.class_average) }}%</p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="dashboard-charts">
+                    <div class="dashboard-chart-card">
+                        <h3 class="dashboard-chart-card__title">Grade Distribution</h3>
+                        <div class="dashboard-chart-card__wrapper">
+                            <canvas id="gradeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-chart-card">
+                        <h3 class="dashboard-chart-card__title">Pass vs Fail Ratio</h3>
+                        <div class="dashboard-chart-card__wrapper">
+                            <canvas id="passFailChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Students Table -->
+                <div class="dashboard-top-students">
+                    <h3 class="dashboard-top-students__title">Top 5 Students</h3>
+                    <table class="dashboard-top-students__table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Roll Number</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in stats.top_students %}
+                            <tr>
+                                <td class="dashboard-top-students__rank">{{ loop.index }}</td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.roll_number }}</td>
+                                <td class="dashboard-top-students__percentage">
+                                    {% set percentage = student.percentage %}
+                                    <span class="dashboard-top-students__badge dashboard-top-students__badge--{% if percentage >= 90 %}A{% elif percentage >= 75 %}B{% elif percentage >= 60 %}C{% elif percentage >= 40 %}D{% else %}F{% endif %}">
+                                        {{ "%.1f"|format(percentage) }}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #94a3b8; padding: 2rem;">No student data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="dashboard-footer">
+                <p class="dashboard-footer__text">&copy; 2026 Student Result System | v1.0.0</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+    // Sidebar Toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('dashboard-sidebar--open');
+        });
+    }
+
+    // Initialize Charts
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboardCharts();
+    });
+
+    function initDashboardCharts() {
+        // Grade Distribution Chart
+        const gradeCtx = document.getElementById('gradeChart');
+        if (gradeCtx) {
+            new Chart(gradeCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['A', 'B', 'C', 'D', 'F'],
+                    datasets: [{
+                        label: 'Number of Students',
+                        data: [
+                            {{ stats.grade_distribution.A }},
+                            {{ stats.grade_distribution.B }},
+                            {{ stats.grade_distribution.C }},
+                            {{ stats.grade_distribution.D }},
+                            {{ stats.grade_distribution.F }}
+                        ],
+                        backgroundColor: ['#22c55e', '#84cc16', '#f59e0b', '#f97316', '#ef4444'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            padding: 12,
+                            displayColors: false,
+                            bodyFont: { size: 13, weight: '500' },
+                            titleFont: { size: 14, weight: '600' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0,
+                                font: { size: 12 },
+                                color: '#64748b'
+                            },
+                            grid: {
+                                color: '#e2e8f0',
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 12, weight: '500' },
+                                color: '#334155'
+                            },
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Pass/Fail Doughnut Chart
+        const passFailCtx = document.getElementById('passFailChart');
+        if (passFailCtx) {
+            const passCount = {{ stats.pass_fail_count.pass }};
+            const failCount = {{ stats.pass_fail_count.fail }};
+            const total = passCount + failCount;
+            const passPercentage = total > 0 ? ((passCount / total) * 100).toFixed(1) : 0;
+
+            new Chart(passFailCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pass', 'Fail'],
+                    datasets: [{
+                        data: [passCount, failCount],
+                        backgroundColor: ['#22c55e', '#ef4444'],
+                        borderColor: '#ffffff',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 10,
+                                padding: 20,
+                                font: { size: 13, weight: '500' },
+                                color: '#334155',
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        return {
+                                            text: label + ': ' + value,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            hidden: false,
+                                            index: i
+                                        };
+                                    });
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            padding: 12,
+                            displayColors: false,
+                            bodyFont: { size: 13, weight: '500' },
+                            titleFont: { size: 14, weight: '600' },
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed;
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return context.label + ': ' + value + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'centerText',
+                    afterDatasetsDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                        
+                        ctx.save();
+                        ctx.font = 'bold 28px sans-serif';
+                        ctx.fillStyle = '#15803d';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(passPercentage + '%', centerX, centerY - 8);
+                        
+                        ctx.font = '500 13px sans-serif';
+                        ctx.fillStyle = '#64748b';
+                        ctx.fillText('Pass Rate', centerX, centerY + 16);
+                        ctx.restore();
+                    }
+                }]
+            });
+        }
+    }
+    </script>
+</body>
+</html>

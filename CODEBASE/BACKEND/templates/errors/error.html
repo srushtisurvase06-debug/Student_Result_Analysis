@@ -1,0 +1,10 @@
+{# Shared error page, parameterised by status code. Used by the 400, 401, 403, 405 and 503 handlers. 404 and 500 keep their own templates because TRD 4.5, TRD 18.2 and PHASE.md name those two paths explicitly. One template for the remaining codes avoids five near-identical files without introducing an indirection layer. #}{%- extends "base.html" -%}
+{%- block title %}{{ code }} - {{ heading }}{% endblock %}
+{%- block content %}
+<section class="error-page">
+    <p class="error-page__code">{{ code }}</p>
+    <h1 class="error-page__heading">{{ heading }}</h1>
+    <p class="error-page__message">{{ message }}</p>
+    <a class="error-page__action" href="{{ url_for('index') }}">Go to Home</a>
+</section>
+{%- endblock %}

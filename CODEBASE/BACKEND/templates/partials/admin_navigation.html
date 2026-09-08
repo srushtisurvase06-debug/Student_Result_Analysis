@@ -1,0 +1,85 @@
+{# Unified Admin Navigation - Used by all admin screens #}
+{% if session.get('admin_id') %}
+<aside class="admin-sidebar" id="admin-sidebar">
+    <!-- Brand -->
+    <div class="admin-sidebar__brand">
+        <a href="{{ url_for('dashboard.index') }}" class="admin-sidebar__brand-link">
+            <span class="admin-sidebar__brand-icon" aria-hidden="true">📊</span>
+            <span class="admin-sidebar__brand-text">Student Result System</span>
+        </a>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="admin-sidebar__nav">
+        <ul class="admin-sidebar__nav-list">
+            <li class="admin-sidebar__nav-item">
+                <a href="{{ url_for('dashboard.index') }}" 
+                   class="admin-sidebar__nav-link {% if request.endpoint == 'dashboard.index' %}admin-sidebar__nav-link--active{% endif %}">
+                    <span class="admin-sidebar__nav-icon" aria-hidden="true">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="admin-sidebar__nav-item">
+                <a href="{{ url_for('students.list_students') }}" 
+                   class="admin-sidebar__nav-link {% if request.endpoint and request.endpoint.startswith('students.') %}admin-sidebar__nav-link--active{% endif %}">
+                    <span class="admin-sidebar__nav-icon" aria-hidden="true">👥</span>
+                    <span>Students</span>
+                </a>
+            </li>
+            <li class="admin-sidebar__nav-item">
+                <a href="{{ url_for('subjects.list_subjects') }}" 
+                   class="admin-sidebar__nav-link {% if request.endpoint and request.endpoint.startswith('subjects.') %}admin-sidebar__nav-link--active{% endif %}">
+                    <span class="admin-sidebar__nav-icon" aria-hidden="true">📚</span>
+                    <span>Subjects</span>
+                </a>
+            </li>
+            <li class="admin-sidebar__nav-item">
+                <a href="{{ url_for('marks.list_marks') }}" 
+                   class="admin-sidebar__nav-link {% if request.endpoint and request.endpoint.startswith('marks.') %}admin-sidebar__nav-link--active{% endif %}">
+                    <span class="admin-sidebar__nav-icon" aria-hidden="true">📝</span>
+                    <span>Marks</span>
+                </a>
+            </li>
+            <li class="admin-sidebar__nav-item">
+                <a href="{{ url_for('results.list_results') }}" 
+                   class="admin-sidebar__nav-link {% if request.endpoint and request.endpoint.startswith('results.') %}admin-sidebar__nav-link--active{% endif %}">
+                    <span class="admin-sidebar__nav-icon" aria-hidden="true">📊</span>
+                    <span>Results</span>
+                </a>
+            </li>
+            <li class="admin-sidebar__nav-item">
+                <a href="{{ url_for('analysis.index') }}" 
+                   class="admin-sidebar__nav-link {% if request.endpoint and request.endpoint.startswith('analysis.') %}admin-sidebar__nav-link--active{% endif %}">
+                    <span class="admin-sidebar__nav-icon" aria-hidden="true">📈</span>
+                    <span>Analysis</span>
+                </a>
+            </li>
+            <li class="admin-sidebar__nav-item">
+                <a href="{{ url_for('reports.index') }}" 
+                   class="admin-sidebar__nav-link {% if request.endpoint and request.endpoint.startswith('reports.') %}admin-sidebar__nav-link--active{% endif %}">
+                    <span class="admin-sidebar__nav-icon" aria-hidden="true">📄</span>
+                    <span>Reports</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <!-- Footer -->
+    <div class="admin-sidebar__footer">
+        <div class="admin-sidebar__user">
+            <span class="admin-sidebar__user-icon" aria-hidden="true">👤</span>
+            <span>{{ session.username or 'admin' }}</span>
+        </div>
+        <a href="{{ url_for('profile.index') }}" class="admin-sidebar__nav-link {% if request.endpoint and request.endpoint.startswith('profile.') %}admin-sidebar__nav-link--active{% endif %}" style="padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+            <span class="admin-sidebar__nav-icon" aria-hidden="true">⚙️</span>
+            <span>Profile Settings</span>
+        </a>
+        <form method="post" action="{{ url_for('auth.logout') }}">
+            <button type="submit" class="admin-sidebar__logout">
+                <span aria-hidden="true">👋</span>
+                <span>Logout</span>
+            </button>
+        </form>
+    </div>
+</aside>
+{% endif %}
