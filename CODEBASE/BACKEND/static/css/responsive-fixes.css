@@ -8,46 +8,56 @@
  */
 
 /* =================================================================
-   GLOBAL VIEWPORT FIX - Prevent horizontal overflow
+   VIEWPORT WIDTH CONSTRAINTS - Fix specific overflow sources
    ================================================================= */
-html {
-    overflow-x: hidden;
-    width: 100%;
-}
 
-body {
-    overflow-x: hidden;
+/* Container width constraints to prevent overflow */
+.admin-container,
+.dashboard-container,
+.container {
     width: 100%;
-    max-width: 100vw;
-}
-
-/* Ensure all containers respect viewport width */
-* {
     max-width: 100%;
+    box-sizing: border-box;
 }
 
-/* But allow specific elements to use full parent width */
+/* Ensure content areas respect viewport */
 .admin-content,
 .dashboard-content,
-.students-content,
-table,
-.table-container {
-    max-width: none;
+.students-content {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Prevent wide elements from causing overflow */
+.admin-main,
+.dashboard-main,
+.page-container {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* =================================================================
    TABLE RESPONSIVENESS - Critical for data tables
    ================================================================= */
-.table-wrapper {
+
+/* Table wrapper handles horizontal scroll when needed */
+.table-wrapper,
+.table-container,
+.admin-table-wrapper,
+.marks-table-wrapper {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
 }
 
+/* Tables maintain minimum readable width, scroll inside wrapper */
 .admin-table,
 .students-table,
 table {
     min-width: 600px; /* Ensures table stays readable */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 @media (max-width: 767px) {

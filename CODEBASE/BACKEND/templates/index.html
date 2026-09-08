@@ -1,0 +1,236 @@
+{% extends "public_base.html" %}
+
+{% block title %}Student Result Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Portal Landing Page Styles */
+    .portal-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    }
+
+    .portal-container {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .portal-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .portal-header__title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--color-primary);
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
+    }
+
+    .portal-header__subtitle {
+        font-size: 1.125rem;
+        color: var(--color-text-secondary);
+        margin: 0;
+        font-weight: 400;
+    }
+
+    .portal-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .portal-card {
+        background: var(--color-bg-card);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid var(--color-border);
+    }
+
+    .portal-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .portal-card__icon {
+        font-size: 3rem;
+        margin-bottom: 1.25rem;
+        display: block;
+    }
+
+    .portal-card__title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin: 0 0 0.75rem 0;
+    }
+
+    .portal-card__description {
+        font-size: 0.9375rem;
+        color: var(--color-text-secondary);
+        margin: 0 0 1.75rem 0;
+        line-height: 1.6;
+    }
+
+    .portal-card__button {
+        display: inline-block;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .portal-card__button--primary {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    .portal-card__button--primary:hover {
+        background-color: var(--color-primary-dark);
+        transform: scale(1.02);
+    }
+
+    .portal-card__button--secondary {
+        background-color: var(--color-primary-light);
+        color: white;
+    }
+
+    .portal-card__button--secondary:hover {
+        background-color: var(--color-primary);
+        transform: scale(1.02);
+    }
+
+    .portal-footer {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--color-text-muted);
+        font-size: 0.875rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .portal-header__title {
+            font-size: 2rem;
+        }
+
+        .portal-header__subtitle {
+            font-size: 1rem;
+        }
+
+        .portal-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .portal-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .portal-card__icon {
+            font-size: 2.5rem;
+        }
+
+        .portal-card__title {
+            font-size: 1.25rem;
+        }
+
+        .portal-card__description {
+            font-size: 0.875rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .portal-page {
+            padding: 1.5rem 1rem;
+        }
+
+        .portal-header {
+            margin-bottom: 2rem;
+        }
+
+        .portal-header__title {
+            font-size: 1.75rem;
+        }
+
+        .portal-card {
+            padding: 1.75rem 1.25rem;
+        }
+
+        .portal-card__button {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9375rem;
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 320px) {
+        .portal-header__title {
+            font-size: 1.5rem;
+        }
+
+        .portal-card__icon {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="portal-page">
+    <div class="portal-container">
+        <!-- Header -->
+        <header class="portal-header">
+            <h1 class="portal-header__title">Student Result Management System</h1>
+            <p class="portal-header__subtitle">Welcome – Please select your portal</p>
+        </header>
+
+        <!-- Portal Cards -->
+        <div class="portal-grid">
+            <!-- Admin Portal -->
+            <article class="portal-card">
+                <span class="portal-card__icon" aria-hidden="true">🔐</span>
+                <h2 class="portal-card__title">Admin Portal</h2>
+                <p class="portal-card__description">
+                    For authorized administrators to manage students, subjects, marks, and generate reports
+                </p>
+                <a href="{{ url_for('auth.login') }}" class="portal-card__button portal-card__button--primary">
+                    Admin Login
+                </a>
+            </article>
+
+            <!-- Public Result Portal -->
+            <article class="portal-card">
+                <span class="portal-card__icon" aria-hidden="true">📊</span>
+                <h2 class="portal-card__title">Public Result Portal</h2>
+                <p class="portal-card__description">
+                    For students and parents to check examination results using roll number and date of birth
+                </p>
+                <a href="{{ url_for('results.lookup') }}" class="portal-card__button portal-card__button--secondary">
+                    Check Student Result
+                </a>
+            </article>
+        </div>
+
+        <!-- Footer -->
+        <footer class="portal-footer">
+            <p>&copy; 2026 Student Result Management System • Version 1.0</p>
+        </footer>
+    </div>
+</div>
+{% endblock %}

@@ -240,12 +240,8 @@ def create_app(config_name=None):
 
     @app.route('/')
     def index():
-        """Root endpoint - API status."""
-        return jsonify({
-            'message': 'Student Result Analysis System API',
-            'version': '1.0',
-            'status': 'running'
-        })
+        """Root landing page - portal selection."""
+        return render_template('index.html')
 
     @app.route('/health')
     def health():

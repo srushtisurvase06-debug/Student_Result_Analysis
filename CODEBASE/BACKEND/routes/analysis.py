@@ -44,15 +44,7 @@ def index():
         else:
             students_with_results = 0
         
-        cursor.close()
-    finally:
-        conn.close()
-    
-    # Get subject data for analysis cards
-    conn = get_db_connection()
-    try:
-        cursor = conn.cursor()
-        
+        # Get subject data for analysis cards - REUSE SAME CONNECTION
         cursor.execute("""
             SELECT 
                 s.id,
@@ -69,16 +61,11 @@ def index():
         
         subjects = [dict(row) for row in cursor.fetchall()]
         
-        cursor.close()
-    finally:
-        conn.close()
-    
-    # Get analytics for charts
-    from utils.calculations import calculate_grade_distribution, calculate_pass_fail_stats
-    conn = get_db_connection()
-    try:
+        # Get analytics for charts - REUSE SAME CONNECTION
         grade_distribution = calculate_grade_distribution(conn)
         pass_fail_stats = calculate_pass_fail_stats(conn)
+        
+        cursor.close()
     finally:
         conn.close()
     
